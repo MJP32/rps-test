@@ -1,16 +1,17 @@
 package com.tw.casino.connection;
 
 import com.tw.casino.IDealer;
-import com.tw.casino.IRequest;
+import com.tw.casino.Request;
 import com.tw.casino.component.Dealer;
 import com.tw.casino.simulator.PlayerInfo;
 
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-public class ServerHandler extends ChannelInboundHandlerAdapter 
+public class ServerHandler extends ChannelDuplexHandler 
 {
 
     private IDealer dealer;
@@ -30,7 +31,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
     {
-        dealer.processRequest((IRequest) msg);
+        dealer.processRequest((Request) msg);
     }
 
     @Override

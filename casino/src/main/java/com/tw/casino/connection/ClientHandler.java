@@ -3,10 +3,11 @@ package com.tw.casino.connection;
 import com.tw.casino.component.Player;
 import com.tw.casino.component.SimpleRequest;
 
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class ClientHandler extends ChannelInboundHandlerAdapter 
+public class ClientHandler extends ChannelDuplexHandler 
 {
     private Player player;
     

@@ -1,7 +1,7 @@
 package com.tw.casino.component;
 
 import com.tw.casino.IPlayer;
-import com.tw.casino.game.rps.RPSStrategy;
+import com.tw.casino.simulator.DefaultRPSStrategy;
 
 public class Player implements IPlayer {
 
@@ -12,7 +12,7 @@ public class Player implements IPlayer {
 	}
 
 	@Override
-	public void setRPSStrategy(RPSStrategy rpsStrategy) {
+	public void setRPSStrategy(DefaultRPSStrategy rpsStrategy) {
 		// TODO Auto-generated method stub
 
 	}

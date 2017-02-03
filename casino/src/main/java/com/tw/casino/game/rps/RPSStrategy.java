@@ -1,11 +1,16 @@
 package com.tw.casino.game.rps;
 
-import com.tw.casino.GameId;
+import com.tw.casino.game.GameContext;
+import com.tw.casino.game.GameStrategy;
 
-public class RPSStrategy {
-	
-	public RPSMove playGame(GameId gameId)
-	{
-		return RPSMove.ROCK;
-	}
+public class RPSStrategy implements GameStrategy
+{
+
+    @Override
+    public void nextMove(GameContext context)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
 }

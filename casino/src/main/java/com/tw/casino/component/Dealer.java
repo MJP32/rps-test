@@ -1,7 +1,7 @@
 package com.tw.casino.component;
 
 import com.tw.casino.IDealer;
-import com.tw.casino.IRequest;
+import com.tw.casino.Request;
 
 public class Dealer implements IDealer {
 
@@ -17,7 +17,7 @@ public class Dealer implements IDealer {
 	}
 
     @Override
-    public void processRequest(IRequest request)
+    public void processRequest(Request request)
     {
         if (request instanceof SimpleRequest)
         {

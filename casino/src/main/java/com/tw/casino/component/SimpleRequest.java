@@ -2,9 +2,9 @@ package com.tw.casino.component;
 
 import java.util.UUID;
 
-import com.tw.casino.IRequest;
+import com.tw.casino.Request;
 
-public class SimpleRequest implements IRequest
+public class SimpleRequest implements Request
 {
     private final UUID id;
     

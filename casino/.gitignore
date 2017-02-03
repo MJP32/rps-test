@@ -12,6 +12,7 @@
 .classpath
 .project
 .settings
+target
 
 # Packages #
 ############

@@ -3,7 +3,7 @@ package com.tw.casino.connection;
 import java.util.Scanner;
 
 import com.tw.casino.IPlayer;
-import com.tw.casino.game.rps.RPSStrategy;
+import com.tw.casino.simulator.DefaultRPSStrategy;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
