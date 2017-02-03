@@ -1,5 +1,7 @@
 package com.tw.casino.connection;
 
+import com.tw.casino.util.CasinoConstants;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -17,17 +19,15 @@ import io.netty.util.concurrent.EventExecutorGroup;
 
 public class Server
 {
-    private static final boolean SSL = System.getProperty("ssl") != null;
-    private static final int PORT = Integer.parseInt(System.getProperty("port", "8007"));
-            
-	public Server()
-	{
-		
-	}
-	
+    public static void displayStartup()
+    {
+        System.out.println(CasinoConstants.DEALER_WELCOME);
+    }
+    
 	public static void main(String[] args) throws InterruptedException
 	{
-	    System.out.println("Casino Initializing...");
+	    displayStartup();
+	    
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 	    EventLoopGroup workerGroup = new NioEventLoopGroup();
 	    ServerBootstrap bootstrap = new ServerBootstrap();
@@ -43,15 +43,15 @@ public class Server
 	    bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
 	      @Override
 	      protected void initChannel(SocketChannel ch) throws Exception {
-	        ChannelPipeline pipeline = ch.pipeline();
-	        pipeline.addLast(new ObjectEncoder()); // add with name
-	        pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null))); // add without name, name auto generated
+	        ChannelPipeline channelPipeline = ch.pipeline();
+	        channelPipeline.addLast(new ObjectEncoder()); // add with name
+	        channelPipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null))); // add without name, name auto generated
 	         
 	        //===========================================================
 	        // 2. run handler with slow business logic 
 	        //    in separate thread from I/O thread
 	        //===========================================================
-	        pipeline.addLast(group,"serverHandler",new ServerHandler()); 
+	        channelPipeline.addLast(group,"serverHandler",new ServerHandler()); 
 	      }
 	    });
 	     

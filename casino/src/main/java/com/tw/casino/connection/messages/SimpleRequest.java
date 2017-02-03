@@ -1,4 +1,4 @@
-package com.tw.casino.component;
+package com.tw.casino.connection.messages;
 
 import java.util.UUID;
 

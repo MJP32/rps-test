@@ -2,5 +2,5 @@ package com.tw.casino;
 
 public interface ResponseListener
 {
-    void onResponse();
+    void onResponse(Response response);
 }

@@ -1,7 +1,8 @@
-package com.tw.casino.component;
+package com.tw.casino.actor;
 
 import com.tw.casino.IDealer;
 import com.tw.casino.Request;
+import com.tw.casino.connection.messages.SimpleRequest;
 
 public class Dealer implements IDealer {
 

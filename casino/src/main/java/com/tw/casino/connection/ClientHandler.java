@@ -1,35 +1,42 @@
 package com.tw.casino.connection;
 
-import com.tw.casino.component.Player;
-import com.tw.casino.component.SimpleRequest;
+import com.tw.casino.Response;
+import com.tw.casino.actor.PlayerManager;
+import com.tw.casino.connection.messages.SimpleRequest;
+import com.tw.casino.util.CasinoConstants;
 
-import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.CombinedChannelDuplexHandler;
 
-public class ClientHandler extends ChannelDuplexHandler 
+public class ClientHandler extends CombinedChannelDuplexHandler<ChannelInboundHandlerAdapter, ChannelOutboundHandlerAdapter>  
 {
-    private Player player;
-    
+    private PlayerManager playerManager;
+
     public ClientHandler()
     {
-        player = new Player();
+        this.init(new ChannelInboundHandlerAdapter(), new ChannelOutboundHandlerAdapter());
+        playerManager = new PlayerManager();
     }
-    
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception
     {
-        //SimpleRequest request = new SimpleRequest();
-        //request.setMessage("Hi, I am a new user: " + request.getId());
-        //ctx.writeAndFlush(request);
-        System.out.println("I'm a player!");
+        System.out.println(CasinoConstants.PLAYER_START);
+        playerManager.setupPlayer();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
     {
-        String message = (String) msg;
-        System.out.println(message);
+        playerManager.onResponse((Response) msg);
+    }
+    
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx)
+    {
+        ctx.flush();
     }
 
     @Override
@@ -39,7 +46,7 @@ public class ClientHandler extends ChannelDuplexHandler
         cause.printStackTrace();
         ctx.close();
     }
-    
+
     public String getMessage()
     {
         return "Hello World, Casino!";

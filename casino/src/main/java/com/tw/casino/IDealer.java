@@ -1,7 +1,7 @@
 package com.tw.casino;
 
-public interface IDealer {
-	
+public interface IDealer 
+{
     void processRequest(Request request);
     
 	String offerGameMenu();
