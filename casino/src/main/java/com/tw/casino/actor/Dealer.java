@@ -2,6 +2,7 @@ package com.tw.casino.actor;
 
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +23,32 @@ import com.tw.casino.game.GameCode;
 
 public class Dealer implements IDealer 
 {
+    private UUID dealerId;
+
     private final ConcurrentMap<GameCode, Game> availableGames;
     private final ConcurrentMap<GameCode, Deque<PlayerProfile>> gameCache;
 
     public Dealer()
     {
+        this.dealerId = UUID.randomUUID();
         this.availableGames = new ConcurrentHashMap<>();
         this.gameCache = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public UUID getDealerId()
+    {
+        return dealerId;
+    }
+
+    public Map<GameCode, Game> getAvailableGames()
+    {
+        return availableGames;
+    }
+
+    public Map<GameCode, Deque<PlayerProfile>> getGameCache()
+    {
+        return gameCache;
     }
 
     @Override
@@ -66,7 +86,11 @@ public class Dealer implements IDealer
             else 
             {
                 // The following scenario would be applicable when more than two players are required
-                if (gameCache.get(code).size() < game.requiredNumberOfPlayers())
+                if (gameCache.get(code).contains(playerProfile))
+                {
+                    response = new GameWaitResponse(playerProfile.getPlayerId());
+                }
+                else if (gameCache.get(code).size() < game.requiredNumberOfPlayers())
                 {
                     gameCache.get(code).push(playerProfile);
                     response = new GameWaitResponse(playerProfile.getPlayerId());
