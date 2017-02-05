@@ -3,19 +3,19 @@ package com.tw.casino.game;
 public final class GameDetails
 {
     private final String name;
-    private final String code;
+    private final GameCode code;
     private final double entryFee;
     private final boolean allowStrategy;
 
     private static final double MIN_ENTRY_FEE = 0.0;
     private static final boolean HAS_STRATEGY = false;
     
-    public GameDetails(String name, String code)
+    public GameDetails(String name, GameCode code)
     {
         this(name, code, MIN_ENTRY_FEE, HAS_STRATEGY);
     }
     
-    public GameDetails(String name, String code, double entryFee, boolean allowStrategy)
+    public GameDetails(String name, GameCode code, double entryFee, boolean allowStrategy)
     {
         this.name = name;
         this.code = code;
@@ -28,7 +28,7 @@ public final class GameDetails
         return this.name;
     }
     
-    public String getCode()
+    public GameCode getCode()
     {
         return this.code;
     }

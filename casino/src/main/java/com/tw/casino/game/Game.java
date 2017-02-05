@@ -9,5 +9,7 @@ public interface Game
 {
     GameId getGameId();
     
+    String getName();
+    
     UUID executeGame(List<IPlayer> players);
 }

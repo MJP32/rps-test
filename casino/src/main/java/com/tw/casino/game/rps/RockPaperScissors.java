@@ -6,9 +6,11 @@ import java.util.UUID;
 import com.tw.casino.IPlayer;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameId;
+import com.tw.casino.util.CasinoConstants;
 
 public class RockPaperScissors implements Game
 {
+    private static final String NAME = CasinoConstants.RPS;
     private GameId id;
     private int requiredPlayers;
     
@@ -22,6 +24,12 @@ public class RockPaperScissors implements Game
     public GameId getGameId()
     {
         return this.id;
+    }
+    
+    @Override
+    public String getName()
+    {
+        return NAME;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class Server
 {
     public static void displayStartup()
     {
-        System.out.println(CasinoConstants.DEALER_WELCOME);
+        System.out.println(CasinoConstants.WELCOME);
     }
     
 	public static void main(String[] args) throws InterruptedException

@@ -2,7 +2,7 @@ package com.tw.casino;
 
 import com.tw.casino.connection.messages.Request;
 
-public interface RequestListener
+public interface RequestHandler
 {
-    void onRequest(Request request);
+    void handleRequest(Request request);
 }

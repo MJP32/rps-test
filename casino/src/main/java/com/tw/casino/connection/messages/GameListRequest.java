@@ -3,23 +3,19 @@ package com.tw.casino.connection.messages;
 import java.io.Serializable;
 import java.util.UUID;
 
-import com.tw.casino.Response;
-
-public class GameResponse implements Response, Serializable
+public class GameListRequest implements Request, Serializable
 {
-    private static final long serialVersionUID = 548828943632143549L;
+    private static final long serialVersionUID = 7089637787007821040L;
     
     private final UUID id;
     private final UUID playerId;
-    private final double winnings;
     
-    public GameResponse(UUID playerId, double winnings)
+    public GameListRequest(UUID playerId)
     {
         this.id = UUID.randomUUID();
         this.playerId = playerId;
-        this.winnings = winnings;
     }
-   
+    
     @Override
     public UUID getId()
     {
@@ -30,10 +26,4 @@ public class GameResponse implements Response, Serializable
     {
         return this.playerId;
     }
-
-    public double getWinnings()
-    {
-        return this.winnings;
-    }
-
 }

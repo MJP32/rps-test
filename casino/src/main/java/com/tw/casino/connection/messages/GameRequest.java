@@ -3,7 +3,7 @@ package com.tw.casino.connection.messages;
 import java.io.Serializable;
 import java.util.UUID;
 
-import com.tw.casino.Request;
+import com.tw.casino.game.GameCode;
 
 public class GameRequest implements Request, Serializable
 {
@@ -11,10 +11,10 @@ public class GameRequest implements Request, Serializable
     
     private final UUID id;
     private final UUID playerId;
-    private final String gameCode;
+    private final GameCode gameCode;
     
     
-    public GameRequest(UUID playerId, String gameCode)
+    public GameRequest(UUID playerId, GameCode gameCode)
     {
         this.id = UUID.randomUUID();
         this.playerId = playerId;
@@ -25,6 +25,16 @@ public class GameRequest implements Request, Serializable
     public UUID getId()
     {
         return this.id;
+    }
+
+    public UUID getPlayerId()
+    {
+        return playerId;
+    }
+
+    public GameCode getGameCode()
+    {
+        return gameCode;
     }
 
 }
