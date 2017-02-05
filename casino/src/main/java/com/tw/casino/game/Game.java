@@ -1,9 +1,8 @@
 package com.tw.casino.game;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Collection;
 
-import com.tw.casino.IPlayer;
+import com.tw.casino.actor.PlayerProfile;
 
 public interface Game
 {
@@ -11,5 +10,9 @@ public interface Game
     
     String getName();
     
-    UUID executeGame(List<IPlayer> players);
+    int requiredNumberOfPlayers();
+    
+    double entryFee();
+    
+    PlayerProfile executeGame(Collection<PlayerProfile> players);
 }

@@ -3,33 +3,34 @@ package com.tw.casino.connection.messages;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.tw.casino.actor.PlayerProfile;
 import com.tw.casino.game.GameCode;
 
 public class GameRequest implements Request, Serializable
 {
-    private static final long serialVersionUID = 2604063109860281443L;
+    private static final long serialVersionUID = 8209786112068043094L;
     
     private final UUID id;
-    private final UUID playerId;
+    private final PlayerProfile playerProfile;
     private final GameCode gameCode;
     
     
-    public GameRequest(UUID playerId, GameCode gameCode)
+    public GameRequest(PlayerProfile playerProfile, GameCode gameCode)
     {
         this.id = UUID.randomUUID();
-        this.playerId = playerId;
+        this.playerProfile = playerProfile;
         this.gameCode = gameCode;
     }
 
     @Override
     public UUID getId()
     {
-        return this.id;
+        return id;
     }
 
-    public UUID getPlayerId()
+    public PlayerProfile getPlayerProfile()
     {
-        return playerId;
+        return playerProfile;
     }
 
     public GameCode getGameCode()

@@ -23,7 +23,7 @@ public class DefaultGameDataLoader implements GameDataLoader
     @Override
     public void loadConfiguredGames()
     {
-        RockPaperScissors rps = new RockPaperScissors(2);
+        RockPaperScissors rps = new RockPaperScissors(2, 5.0);
         GameDetails gameDetails = new GameDetails(rps.getName(), GameCode.RPS, 5.0, true);
         
         this.availableGames.add(rps);

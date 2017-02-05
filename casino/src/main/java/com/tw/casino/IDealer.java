@@ -1,13 +1,12 @@
 package com.tw.casino;
 
-import com.tw.casino.connection.messages.Request;
+import com.tw.casino.connection.messages.GameDataResponse;
+import com.tw.casino.connection.messages.GameRequest;
+import com.tw.casino.connection.messages.Response;
 
 public interface IDealer 
 {
-    void processRequest(Request request);
+    void handleGameDataResponse(GameDataResponse gameDataResponse);
     
-	String offerGameMenu();
-	
-	void createRequestedGame(String message);
-	
+    Response handleGameRequest(GameRequest gameRequest);
 }
