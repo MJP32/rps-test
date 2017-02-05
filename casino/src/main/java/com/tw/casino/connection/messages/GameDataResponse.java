@@ -5,35 +5,26 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameCode;
 
-public class GameDataResponse implements Response, Serializable
+public class GameDataResponse extends BaseResponse implements Serializable
 {
-    private static final long serialVersionUID = -8515495192760215987L;
+    private static final long serialVersionUID = -1815787314020848248L;
     
-    private final UUID id;
     private final UUID dealerId;
-    private final Map<GameCode, Game> gameData;
+    private final Map<String, Game> gameData;
     
-    public GameDataResponse(UUID dealerId, Map<GameCode, Game> gameData)
+    public GameDataResponse(UUID dealerId, Map<String, Game> gameData)
     {
-        this.id = UUID.randomUUID();
         this.dealerId = dealerId;
         this.gameData = gameData;
     }
     
-    @Override
-    public UUID getId()
-    {
-        return this.id;
-    }
-
     public UUID getDealerId()
     {
         return this.dealerId;
     }
 
-    public Map<GameCode, Game> getGameData()
+    public Map<String, Game> getGameData()
     {
         return this.gameData;
     }

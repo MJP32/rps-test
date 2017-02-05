@@ -70,9 +70,9 @@ public class ServerHandler extends CombinedChannelDuplexHandler<ChannelInboundHa
 
             // Get Game Details from GameDataLoader
             List<GameDetails> gameList = this.casinoManager.getGameListForPlayer();
-            GameListResponse gameListResponse = new GameListResponse(request.getPlayerId(), gameList);
+            //GameListResponse gameListResponse = new GameListResponse(request.getPlayerId(), gameList);
             System.out.println("Got to sending response...");
-            ctx.writeAndFlush(gameListResponse);           
+            //ctx.writeAndFlush(gameListResponse);           
             System.out.println("Sent a response");
         }
         if (msg instanceof GameRequest)

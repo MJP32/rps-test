@@ -5,4 +5,6 @@ import java.util.UUID;
 public interface Request
 {
     UUID getId();
+    
+    long getTimestamp();
 }

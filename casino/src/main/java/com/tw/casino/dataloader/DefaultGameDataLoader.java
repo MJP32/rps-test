@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameCode;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.rps.RockPaperScissors;
 
@@ -24,7 +23,7 @@ public class DefaultGameDataLoader implements GameDataLoader
     public void loadConfiguredGames()
     {
         RockPaperScissors rps = new RockPaperScissors(2, 5.0);
-        GameDetails gameDetails = new GameDetails(rps.getName(), GameCode.RPS, 5.0, true);
+        GameDetails gameDetails = new GameDetails(rps.getName(), 5.0, true);
         
         this.availableGames.add(rps);
         this.availableGameDetails.add(gameDetails);    

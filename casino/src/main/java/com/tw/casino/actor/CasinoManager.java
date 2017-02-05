@@ -19,7 +19,6 @@ import com.tw.casino.connection.messages.Request;
 import com.tw.casino.dataloader.DefaultGameDataLoader;
 import com.tw.casino.dataloader.GameDataLoader;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameCode;
 import com.tw.casino.game.GameDetails;
 
 public class CasinoManager implements ICasinoManager, RequestListener
@@ -29,8 +28,8 @@ public class CasinoManager implements ICasinoManager, RequestListener
     private final GameDataLoader gameDataLoader;
 
     private final CopyOnWriteArrayList<UUID> dealerRegistry;
-    private final CopyOnWriteArrayList<GameCode> availableGameCodes;
-    private final ConcurrentMap<GameCode, List<UUID>> gameDealerCache;
+    //private final CopyOnWriteArrayList<GameCode> availableGameCodes;
+    //private final ConcurrentMap<GameCode, List<UUID>> gameDealerCache;
     
     private final ExecutorService executor;
 
@@ -38,8 +37,8 @@ public class CasinoManager implements ICasinoManager, RequestListener
     {
         this.gameDataLoader = new DefaultGameDataLoader();
         this.dealerRegistry = new CopyOnWriteArrayList<>();
-        this.availableGameCodes = new CopyOnWriteArrayList<>();
-        this.gameDealerCache = new ConcurrentHashMap<>();
+        //this.availableGameCodes = new CopyOnWriteArrayList<>();
+        //this.gameDealerCache = new ConcurrentHashMap<>();
         this.executor = Executors.newCachedThreadPool();
         
         initialize();
@@ -61,9 +60,9 @@ public class CasinoManager implements ICasinoManager, RequestListener
             synchronized(this)
             {
                 // Assign Dealer to one or more games
-                GameCode gameCode = availableGameCodes.get(DEFAULT);
-                CopyOnWriteArrayList<UUID> dealerList = (CopyOnWriteArrayList<UUID>) gameDealerCache.get(gameCode);
-                dealerList.add(dealerId);
+                //GameCode gameCode = availableGameCodes.get(DEFAULT);
+                //CopyOnWriteArrayList<UUID> dealerList = (CopyOnWriteArrayList<UUID>) gameDealerCache.get(gameCode);
+                //dealerList.add(dealerId);
             }
         }
     }
@@ -77,7 +76,7 @@ public class CasinoManager implements ICasinoManager, RequestListener
     @Override
     public UUID assignDealerOnGameRequest(GameRequest gameRequest)
     {
-        return gameDealerCache.get(gameRequest.getGameCode()).get(DEFAULT);
+        return null;//gameDealerCache.get(gameRequest.getGameName()).get(DEFAULT);
     }
 
     @Override

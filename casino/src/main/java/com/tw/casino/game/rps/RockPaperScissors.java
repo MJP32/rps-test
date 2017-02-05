@@ -49,12 +49,34 @@ public class RockPaperScissors implements Game
     }
     
     @Override
-    public PlayerProfile executeGame(Collection<PlayerProfile> players)
+    public PlayerProfile executeGame(PlayerProfile[] players)
     {
-        if (players.size() < this.requiredPlayers)
-            throw new IllegalStateException("Attempting to start game with less than required players.");
+        if (players.length != this.requiredPlayers)
+            throw new IllegalStateException("Invalid number of players in the game.");
         
-        return null;
+        PlayerProfile playerOne = players[0];
+        PlayerProfile playerTwo = players[1];
+        
+        RPSMove playerOneMove = RPSMove.PAPER;
+        RPSMove playerTwoMove = RPSMove.SCISSORS;
+        
+        PlayerProfile winner = null;
+        if (playerOneMove == RPSMove.PAPER && playerTwoMove == RPSMove.ROCK)
+            winner = playerOne;
+        else if (playerOneMove == RPSMove.ROCK && playerTwoMove == RPSMove.SCISSORS)
+            winner = playerOne;
+        else if (playerOneMove == RPSMove.SCISSORS && playerTwoMove == RPSMove.PAPER)
+            winner = playerOne;
+        else if (playerOneMove == RPSMove.ROCK && playerTwoMove == RPSMove.PAPER)
+            winner = playerTwo;
+        else if (playerOneMove == RPSMove.SCISSORS && playerTwoMove == RPSMove.ROCK)
+            winner = playerTwo;
+        else if (playerOneMove == RPSMove.PAPER && playerTwoMove == RPSMove.SCISSORS)
+            winner = playerTwo;
+        else if (playerOneMove == playerTwoMove)
+            winner = null;
+
+        return winner;
     }
 
 }

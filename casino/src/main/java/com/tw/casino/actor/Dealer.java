@@ -18,15 +18,14 @@ import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameCode;
 
 
 public class Dealer implements IDealer 
 {
     private UUID dealerId;
 
-    private final ConcurrentMap<GameCode, Game> availableGames;
-    private final ConcurrentMap<GameCode, Deque<PlayerProfile>> gameCache;
+    private final ConcurrentMap<String, Game> availableGames;
+    private final ConcurrentMap<String, Deque<PlayerProfile>> gameCache;
 
     public Dealer()
     {
@@ -41,12 +40,12 @@ public class Dealer implements IDealer
         return dealerId;
     }
 
-    public Map<GameCode, Game> getAvailableGames()
+    public Map<String, Game> getAvailableGames()
     {
         return availableGames;
     }
 
-    public Map<GameCode, Deque<PlayerProfile>> getGameCache()
+    public Map<String, Deque<PlayerProfile>> getGameCache()
     {
         return gameCache;
     }
@@ -63,7 +62,7 @@ public class Dealer implements IDealer
         Response response = null;
         synchronized (this)
         {
-            GameCode code = gameRequest.getGameCode();
+            String code = gameRequest.getGameName();
             Game game = availableGames.get(code);
 
             // Validate Player
@@ -95,9 +94,16 @@ public class Dealer implements IDealer
                     gameCache.get(code).push(playerProfile);
                     response = new GameWaitResponse(playerProfile.getPlayerId());
                 }
-                else
+                else if (gameCache.get(code).size() == game.requiredNumberOfPlayers())
                 {
-                    game.executeGame(Collections.synchronizedCollection(gameCache.get(code)));
+                    PlayerProfile[] players = new PlayerProfile[game.requiredNumberOfPlayers()];
+                    Deque<PlayerProfile> requiredPlayers = gameCache.get(code);
+                    int i = 0;
+                    for (PlayerProfile player : requiredPlayers)
+                        players[i++] = player;
+                    
+                    PlayerProfile winner = game.executeGame(players);
+                    
                     gameCache.remove(code);
                 }
             }

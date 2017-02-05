@@ -7,25 +7,17 @@ import java.util.UUID;
 
 import com.tw.casino.game.GameDetails;
 
-public class GameListResponse implements Response, Serializable
+public class GameListResponse extends BaseResponse implements Serializable
 {
-    private static final long serialVersionUID = -4844126834959583483L;
+    private static final long serialVersionUID = 708050025747084291L;
     
-    private final UUID id;
     private final UUID playerId;
     private final List<GameDetails> availableGames;
     
     public GameListResponse(UUID playerId, List<GameDetails> availableGames)
     {
-        this.id = UUID.randomUUID();
         this.playerId = playerId;
         this.availableGames = availableGames;
-    }
-
-    @Override
-    public UUID getId()
-    {
-        return this.id;
     }
 
     public UUID getPlayerId()

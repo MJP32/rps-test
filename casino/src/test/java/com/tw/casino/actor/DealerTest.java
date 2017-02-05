@@ -12,9 +12,9 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameCode;
 import com.tw.casino.game.rps.RPSStrategy;
 import com.tw.casino.game.rps.RockPaperScissors;
+import com.tw.casino.util.CasinoConstants;
 
 import junit.framework.TestCase;
 
@@ -22,10 +22,10 @@ public class DealerTest extends TestCase
 {
     private Dealer dealer = new Dealer();
     
-    private static Map<GameCode, Game> games = new HashMap<>();
+    private static Map<String, Game> games = new HashMap<>();
     static
     {
-        games.put(GameCode.RPS, new RockPaperScissors(2, 5.0));
+        games.put(CasinoConstants.RPS, new RockPaperScissors(2, 5.0));
     }
     private GameDataResponse gameDataResponse = new GameDataResponse(dealer.getDealerId(), games);
 
@@ -47,7 +47,7 @@ public class DealerTest extends TestCase
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
         playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());
-        gameRequest = new GameRequest(playerOne, GameCode.RPS);
+        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
         
         Response response = dealer.handleGameRequest(gameRequest);
         assertTrue(response instanceof GameWaitResponse);
@@ -59,11 +59,11 @@ public class DealerTest extends TestCase
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
         playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());      
-        gameRequest = new GameRequest(playerOne, GameCode.RPS);
+        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
         
         dealer.handleGameRequest(gameRequest);
         
-        GameRequest anotherGameRequest = new GameRequest(playerOne, GameCode.RPS);
+        GameRequest anotherGameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
         Response response = dealer.handleGameRequest(anotherGameRequest);
         
         assertTrue(response instanceof GameWaitResponse);
@@ -76,7 +76,7 @@ public class DealerTest extends TestCase
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
 
         playerThree = new PlayerProfile(UUID.randomUUID(), 4.0, new RPSStrategy());
-        gameRequest = new GameRequest(playerThree, GameCode.RPS);
+        gameRequest = new GameRequest(playerThree, CasinoConstants.RPS);
         Response response = dealer.handleGameRequest(gameRequest);
         
         assertTrue(response instanceof GameRejectResponse);

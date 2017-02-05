@@ -107,10 +107,10 @@ public final class PlayerContext extends ActorContext
         {
             GameListResponse menu = (GameListResponse) response;
             System.out.println(CasinoConstants.GAME_LIST_AVAILABLE);
-            for (GameDetails gd : menu.getAvailableGames())
+            /*for (GameDetails gd : menu.getAvailableGames())
             {
                 System.out.println(gd.getName());
-            }
+            }*/
         }  
     }
 

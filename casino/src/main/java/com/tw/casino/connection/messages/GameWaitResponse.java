@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public class GameWaitResponse extends BaseGameResponse implements Serializable
 {
-    private static final long serialVersionUID = 548828943632143549L;
-    
+    private static final long serialVersionUID = 3319851954996624021L;
+
     public GameWaitResponse(UUID playerId)
     {
         super(playerId);

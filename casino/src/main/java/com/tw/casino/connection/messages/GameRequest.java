@@ -4,28 +4,19 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import com.tw.casino.actor.PlayerProfile;
-import com.tw.casino.game.GameCode;
 
-public class GameRequest implements Request, Serializable
+public class GameRequest extends BaseRequest implements Serializable
 {
-    private static final long serialVersionUID = 8209786112068043094L;
+    private static final long serialVersionUID = 1436436035219299645L;
     
-    private final UUID id;
     private final PlayerProfile playerProfile;
-    private final GameCode gameCode;
+    private final String gameName;
     
     
-    public GameRequest(PlayerProfile playerProfile, GameCode gameCode)
+    public GameRequest(PlayerProfile playerProfile, String gameName)
     {
-        this.id = UUID.randomUUID();
         this.playerProfile = playerProfile;
-        this.gameCode = gameCode;
-    }
-
-    @Override
-    public UUID getId()
-    {
-        return id;
+        this.gameName = gameName;
     }
 
     public PlayerProfile getPlayerProfile()
@@ -33,9 +24,9 @@ public class GameRequest implements Request, Serializable
         return playerProfile;
     }
 
-    public GameCode getGameCode()
+    public String getGameName()
     {
-        return gameCode;
+        return gameName;
     }
 
 }
