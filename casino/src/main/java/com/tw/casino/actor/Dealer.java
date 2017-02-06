@@ -53,7 +53,11 @@ public class Dealer implements IDealer
     @Override
     public void handleGameDataResponse(GameDataResponse gameDataResponse)
     {
-        this.availableGames.putAll(gameDataResponse.getGameData());
+        synchronized(this)
+        {
+            for (Game game : gameDataResponse.getGameData())
+                availableGames.put(game.getName(), game);
+        }
     }
 
     @Override

@@ -1,7 +1,11 @@
 package com.tw.casino.game;
 
-public final class GameDetails
+import java.io.Serializable;
+
+public final class GameDetails implements Serializable
 {
+    private static final long serialVersionUID = -901935564818912216L;
+    
     private final String name;
     private final double entryFee;
     private final boolean allowStrategy;

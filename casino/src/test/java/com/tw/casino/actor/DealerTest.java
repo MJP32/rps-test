@@ -1,6 +1,8 @@
 package com.tw.casino.actor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,10 +24,10 @@ public class DealerTest extends TestCase
 {
     private Dealer dealer = new Dealer();
     
-    private static Map<String, Game> games = new HashMap<>();
+    private static List<Game> games = new ArrayList<>();
     static
     {
-        games.put(CasinoConstants.RPS, new RockPaperScissors(2, 5.0));
+        games.add(new RockPaperScissors(2, 5.0));
     }
     private GameDataResponse gameDataResponse = new GameDataResponse(dealer.getDealerId(), games);
 

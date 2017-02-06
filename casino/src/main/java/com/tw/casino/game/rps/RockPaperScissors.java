@@ -1,5 +1,6 @@
 package com.tw.casino.game.rps;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -10,8 +11,10 @@ import com.tw.casino.game.Game;
 import com.tw.casino.game.GameId;
 import com.tw.casino.util.CasinoConstants;
 
-public class RockPaperScissors implements Game
+public class RockPaperScissors implements Game, Serializable
 {
+    private static final long serialVersionUID = -675644357093471300L;
+    
     private static final String NAME = CasinoConstants.RPS;
     private final GameId id;
     private final int requiredPlayers;
