@@ -17,14 +17,16 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
+import com.tw.casino.game.rps.RockPaperScissors;
 
 
 public class Dealer implements IDealer 
 {
     private UUID dealerId;
 
-    private final ConcurrentMap<String, Game> availableGames;
+    private final ConcurrentMap<String, DealerGameDetails> availableGames;
     private final ConcurrentMap<String, Deque<PlayerProfile>> gameCache;
 
     public Dealer()
@@ -40,7 +42,7 @@ public class Dealer implements IDealer
         return dealerId;
     }
 
-    public Map<String, Game> getAvailableGames()
+    public Map<String, DealerGameDetails> getAvailableGames()
     {
         return availableGames;
     }
@@ -55,7 +57,7 @@ public class Dealer implements IDealer
     {
         synchronized(this)
         {
-            for (Game game : gameDataResponse.getGameData())
+            for (DealerGameDetails game : gameDataResponse.getGameData())
                 availableGames.put(game.getName(), game);
         }
     }
@@ -67,7 +69,9 @@ public class Dealer implements IDealer
         synchronized (this)
         {
             String code = gameRequest.getGameName();
-            Game game = availableGames.get(code);
+            // TODO FIX THIS!!!!!!!
+            DealerGameDetails gameDetails = availableGames.get(code);
+            Game game = new RockPaperScissors(gameDetails.getRequiredNumberOfPlayers(), gameDetails.getEntryFee());
 
             // Validate Player
             PlayerProfile playerProfile = gameRequest.getPlayerProfile();

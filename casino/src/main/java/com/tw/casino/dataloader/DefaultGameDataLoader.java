@@ -3,41 +3,43 @@ package com.tw.casino.dataloader;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.rps.RockPaperScissors;
+import com.tw.casino.util.CasinoConstants;
 
 public class DefaultGameDataLoader implements GameDataLoader
 {
-    private final List<Game> availableGames;
+    private final List<DealerGameDetails> dealerGameStore;
     
-    private final List<GameDetails> availableGameDetails;
+    private final List<GameDetails> playerGameStore;
     
     public DefaultGameDataLoader()
     {
-        this.availableGames = new CopyOnWriteArrayList<>();
-        this.availableGameDetails = new CopyOnWriteArrayList<>();
+        this.dealerGameStore = new CopyOnWriteArrayList<>();
+        this.playerGameStore = new CopyOnWriteArrayList<>();
     }
     
     @Override
     public void loadConfiguredGames()
     {
-        RockPaperScissors rps = new RockPaperScissors(2, 5.0);
-        GameDetails gameDetails = new GameDetails(rps.getName(), 5.0, true);
+        GameDetails gameDetails = new GameDetails(CasinoConstants.RPS, 5.0, true);
+        DealerGameDetails dealerGameDetails = new DealerGameDetails(CasinoConstants.RPS, 5.0, true, 2);
         
-        this.availableGames.add(rps);
-        this.availableGameDetails.add(gameDetails);    
+        this.dealerGameStore.add(dealerGameDetails);
+        this.playerGameStore.add(gameDetails);    
     }
 
     @Override
-    public List<Game> getGames()
+    public List<DealerGameDetails> getGames()
     {
-        return this.availableGames;
+        return dealerGameStore;
     }
 
     @Override
     public List<GameDetails> availableGames()
     {
-        return this.availableGameDetails;
+        return this.playerGameStore;
     }
 }

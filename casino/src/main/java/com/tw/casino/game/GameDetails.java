@@ -2,7 +2,7 @@ package com.tw.casino.game;
 
 import java.io.Serializable;
 
-public final class GameDetails implements Serializable
+public class GameDetails implements Serializable
 {
     private static final long serialVersionUID = -901935564818912216L;
     

@@ -11,6 +11,7 @@ import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
 
@@ -41,7 +42,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
         }
         else if (request instanceof GameDataRequest)
         {
-            List<Game> gameData = casinoManager.getGameData();
+            List<DealerGameDetails> gameData = casinoManager.getGameData();
             response = new GameDataResponse(((GameDataRequest) request).getDealerId(), gameData);
         }
         

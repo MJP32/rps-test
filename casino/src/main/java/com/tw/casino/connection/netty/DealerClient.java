@@ -10,6 +10,7 @@ import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.Response;
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.util.CasinoConstants;
 
@@ -62,8 +63,8 @@ public final class DealerClient
             GameDataRequest request = new GameDataRequest(dealer.getDealerId());
             GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
             dealer.handleGameDataResponse(response);
-            for (Game game : response.getGameData())
-                System.out.println(game.getName());
+            for (DealerGameDetails details : response.getGameData())
+                System.out.println(details.getName());
 
             Scanner scanner = new Scanner(System.in);
             while (true)

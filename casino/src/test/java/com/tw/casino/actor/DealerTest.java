@@ -13,6 +13,7 @@ import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Response;
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.rps.RPSStrategy;
 import com.tw.casino.game.rps.RockPaperScissors;
@@ -24,10 +25,10 @@ public class DealerTest extends TestCase
 {
     private Dealer dealer = new Dealer();
     
-    private static List<Game> games = new ArrayList<>();
+    private static List<DealerGameDetails> games = new ArrayList<>();
     static
     {
-        games.add(new RockPaperScissors(2, 5.0));
+        games.add(new DealerGameDetails(CasinoConstants.RPS, 5.0, true, 2));
     }
     private GameDataResponse gameDataResponse = new GameDataResponse(dealer.getDealerId(), games);
 

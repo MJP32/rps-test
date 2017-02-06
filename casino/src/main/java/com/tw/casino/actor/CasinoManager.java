@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.tw.casino.dataloader.DefaultGameDataLoader;
 import com.tw.casino.dataloader.GameDataLoader;
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
 
@@ -26,7 +27,7 @@ public class CasinoManager
         return gameDataLoader.availableGames();
     }
     
-    public List<Game> getGameData()
+    public List<DealerGameDetails> getGameData()
     {
         return gameDataLoader.getGames();
     }

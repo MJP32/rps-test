@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 
 public class GameDataResponse extends BaseResponse implements Serializable
@@ -12,9 +13,9 @@ public class GameDataResponse extends BaseResponse implements Serializable
     private static final long serialVersionUID = 2832907221729261051L;
     
     private final UUID dealerId;
-    private final List<Game> gameData;
+    private final List<DealerGameDetails> gameData;
     
-    public GameDataResponse(UUID dealerId, List<Game> gameData)
+    public GameDataResponse(UUID dealerId, List<DealerGameDetails> gameData)
     {
         this.dealerId = dealerId;
         this.gameData = gameData;
@@ -25,7 +26,7 @@ public class GameDataResponse extends BaseResponse implements Serializable
         return this.dealerId;
     }
 
-    public List<Game> getGameData()
+    public List<DealerGameDetails> getGameData()
     {
         return this.gameData;
     }
