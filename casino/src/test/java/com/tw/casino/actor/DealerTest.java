@@ -9,9 +9,13 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.tw.casino.connection.messages.GameDataResponse;
+import com.tw.casino.connection.messages.GameExecuteEvent;
+import com.tw.casino.connection.messages.GameExecuteRejectEvent;
+import com.tw.casino.connection.messages.GameExecuteWaitEvent;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
+import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
@@ -32,7 +36,7 @@ public class DealerTest extends TestCase
     }
     private GameDataResponse gameDataResponse = new GameDataResponse(dealer.getDealerId(), games);
 
-    private GameRequest gameRequest;
+    private GameExecuteEvent gameExecuteEvent;
     
     private PlayerProfile playerOne;
     //private PlayerProfile playerTwo;
@@ -50,11 +54,12 @@ public class DealerTest extends TestCase
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
         playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
         
-        Response response = dealer.handleGameRequest(gameRequest);
-        assertTrue(response instanceof GameWaitResponse);
-        assertEquals(playerOne.getPlayerId(), ((GameWaitResponse) response).getPlayerId());
+        List<Request> responses = dealer.handleGameExecuteEvent(gameExecuteEvent);
+        Request executedEvent = responses.get(0);
+        assertTrue(executedEvent instanceof GameExecuteWaitEvent);
+        assertEquals(playerOne.getPlayerId(), ((GameExecuteWaitEvent) executedEvent).getPlayerId());
     }
     
     @Test
@@ -62,15 +67,16 @@ public class DealerTest extends TestCase
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
         playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());      
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
         
-        dealer.handleGameRequest(gameRequest);
+        dealer.handleGameExecuteEvent(gameExecuteEvent);
         
-        GameRequest anotherGameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
-        Response response = dealer.handleGameRequest(anotherGameRequest);
+        GameExecuteEvent anotherGameRequest = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
+        List<Request> responses = dealer.handleGameExecuteEvent(anotherGameRequest);
+        Request executedEvent = responses.get(0);
         
-        assertTrue(response instanceof GameWaitResponse);
-        assertEquals(playerOne.getPlayerId(), ((GameWaitResponse) response).getPlayerId());
+        assertTrue(executedEvent instanceof GameExecuteWaitEvent);
+        assertEquals(playerOne.getPlayerId(), ((GameExecuteWaitEvent) executedEvent).getPlayerId());
     }
     
     @Test
@@ -79,10 +85,11 @@ public class DealerTest extends TestCase
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
 
         playerThree = new PlayerProfile(UUID.randomUUID(), 4.0, new RPSStrategy());
-        gameRequest = new GameRequest(playerThree, CasinoConstants.RPS);
-        Response response = dealer.handleGameRequest(gameRequest);
+        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerThree, CasinoConstants.RPS);
+        List<Request> responses = dealer.handleGameExecuteEvent(gameExecuteEvent);
+        Request executedEvent = responses.get(0);
         
-        assertTrue(response instanceof GameRejectResponse);
-        assertEquals(playerThree.getPlayerId(), ((GameRejectResponse) response).getPlayerId());
+        assertTrue(executedEvent instanceof GameExecuteRejectEvent);
+        assertEquals(playerThree.getPlayerId(), ((GameExecuteRejectEvent) executedEvent).getPlayerId());
     }
 }

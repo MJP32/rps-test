@@ -12,8 +12,10 @@ import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
+import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.GameStrategy;
+import com.tw.casino.util.CasinoConstants;
 
 public class Player implements IPlayer 
 {
@@ -35,6 +37,11 @@ public class Player implements IPlayer
     public void setAccountBalance(double accountBalance) 
     {
         this.accountBalance = accountBalance;
+    }
+
+    public double getAccountBalance()
+    {
+        return accountBalance;
     }
 
     @Override
@@ -80,15 +87,35 @@ public class Player implements IPlayer
     
     public void handleGameListResponse(GameListResponse gameListResponse)
     {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(CasinoConstants.GAME_LIST_AVAILABLE);
+        stringBuilder.append("\n");
+        int gameIndex = 1;
         for (GameDetails details : gameListResponse.getAvailableGames())
-            availableGames.put(details.getName(), details);
+        {
+            String name = details.getName();
+            availableGames.put(name, details);
+            
+            stringBuilder.append("Game Code: [");
+            stringBuilder.append(gameIndex++);
+            stringBuilder.append("]  Game: ");
+            stringBuilder.append(name);
+            stringBuilder.append("  Entry Fee: ");
+            stringBuilder.append(details.getEntryFee());
+            stringBuilder.append("  Strategy: ");
+            String strategy = details.isAllowStrategy() ? CasinoConstants.ALLOW_STRATEGY
+                    : CasinoConstants.NO_STRATEGY;
+            stringBuilder.append(strategy);
+            stringBuilder.append("\n");
+        }
+        System.out.println(stringBuilder.toString());
     }
     
-    public void handleGameResponse(BaseGameResponse gameResponse)
+    public void handleGameResponse(Response gameResponse)
     {
         if (gameResponse instanceof GameWaitResponse)
         {
-            // TODO 
+            System.out.println(CasinoConstants.PLAYER_AWAIT);
         }
         else if (gameResponse instanceof GameCompleteResponse)
         {
@@ -105,7 +132,7 @@ public class Player implements IPlayer
         }
         else if (gameResponse instanceof GameRejectResponse)
         {
-            // TODO Decide how to handle
+            System.out.println(CasinoConstants.PLAYER_REJECT);
         }
     }
 

@@ -8,11 +8,11 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.ssl.SslContext;
 
-public class PlayerClientInitializer extends ChannelInitializer<SocketChannel>
+public class CasinoClientInitializer extends ChannelInitializer<SocketChannel>
 {
     private final SslContext sslCtx;
     
-    public PlayerClientInitializer(SslContext sslCtx)
+    public CasinoClientInitializer(SslContext sslCtx)
     {
         this.sslCtx = sslCtx;
     }
@@ -29,6 +29,6 @@ public class PlayerClientInitializer extends ChannelInitializer<SocketChannel>
         pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
         pipeline.addLast(new ObjectEncoder());
         
-        pipeline.addLast(new PlayerClientHandler()); 
+        pipeline.addLast(new CasinoClientHandler()); 
     }
 }

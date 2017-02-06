@@ -1,7 +1,9 @@
 package com.tw.casino.actor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -12,8 +14,10 @@ import java.util.concurrent.Future;
 
 import com.tw.casino.IDealer;
 import com.tw.casino.connection.messages.GameDataResponse;
+import com.tw.casino.connection.messages.GameExecuteEvent;
+import com.tw.casino.connection.messages.GameExecuteRejectEvent;
+import com.tw.casino.connection.messages.GameExecuteWaitEvent;
 import com.tw.casino.connection.messages.GameRejectResponse;
-import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
@@ -26,7 +30,7 @@ public class Dealer implements IDealer
 {
     private UUID dealerId;
 
-    private final ConcurrentMap<String, DealerGameDetails> availableGames;
+    private final ConcurrentMap<String, Game> availableGames;
     private final ConcurrentMap<String, Deque<PlayerProfile>> gameCache;
 
     public Dealer()
@@ -42,7 +46,7 @@ public class Dealer implements IDealer
         return dealerId;
     }
 
-    public Map<String, DealerGameDetails> getAvailableGames()
+    public Map<String, Game> getAvailableGames()
     {
         return availableGames;
     }
@@ -58,66 +62,82 @@ public class Dealer implements IDealer
         synchronized(this)
         {
             for (DealerGameDetails game : gameDataResponse.getGameData())
-                availableGames.put(game.getName(), game);
+                availableGames.put(game.getName(), createGame(game.getEntryFee(), game.isAllowStrategy()));
         }
     }
 
-    @Override
-    public Response handleGameRequest(GameRequest gameRequest)
+    private Game createGame(double entryFee, boolean allowStrategy)
     {
-        Response response = null;
+        return new RockPaperScissors(2, entryFee);
+    }
+
+    @Override
+    public List<Request> handleGameExecuteEvent(GameExecuteEvent gameExecuteEvent)
+    {
+        List<Request> eventList = new ArrayList<Request>();
+        Request event = null;
         synchronized (this)
         {
-            String code = gameRequest.getGameName();
-            // TODO FIX THIS!!!!!!!
-            DealerGameDetails gameDetails = availableGames.get(code);
-            Game game = new RockPaperScissors(gameDetails.getRequiredNumberOfPlayers(), gameDetails.getEntryFee());
+            String name = gameExecuteEvent.getGameName();
+            Game game = availableGames.get(name);
 
             // Validate Player
-            PlayerProfile playerProfile = gameRequest.getPlayerProfile();
+            PlayerProfile playerProfile = gameExecuteEvent.getPlayerProfile();
             double entryFee = playerProfile.getEntryFee();
             if (entryFee < game.entryFee())
             {
-                response = new GameRejectResponse(playerProfile.getPlayerId());
-                return response;
+                event = new GameExecuteRejectEvent(dealerId, playerProfile.getPlayerId());
+
+                eventList.add(event);
+                return eventList;
             }
 
             // Check if gameCache has an entry (game is waiting for players)
-            if (!gameCache.containsKey(code))
+            if (!gameCache.containsKey(name))
             {
                 Deque<PlayerProfile> requiredPlayers = new ConcurrentLinkedDeque<>();
                 requiredPlayers.push(playerProfile);
-                gameCache.put(code, requiredPlayers);
-                response = new GameWaitResponse(playerProfile.getPlayerId());
+                gameCache.put(name, requiredPlayers);
+                event = new GameExecuteWaitEvent(dealerId, playerProfile.getPlayerId());
+
+                eventList.add(event);
+                return eventList;
             }
-            else 
+
+            // Player is already been added to wait list
+            if (gameCache.get(name).contains(playerProfile))
             {
-                // The following scenario would be applicable when more than two players are required
-                if (gameCache.get(code).contains(playerProfile))
-                {
-                    response = new GameWaitResponse(playerProfile.getPlayerId());
-                }
-                else if (gameCache.get(code).size() < game.requiredNumberOfPlayers())
-                {
-                    gameCache.get(code).push(playerProfile);
-                    response = new GameWaitResponse(playerProfile.getPlayerId());
-                }
-                else if (gameCache.get(code).size() == game.requiredNumberOfPlayers())
-                {
-                    PlayerProfile[] players = new PlayerProfile[game.requiredNumberOfPlayers()];
-                    Deque<PlayerProfile> requiredPlayers = gameCache.get(code);
-                    int i = 0;
-                    for (PlayerProfile player : requiredPlayers)
-                        players[i++] = player;
-                    
-                    PlayerProfile winner = game.executeGame(players);
-                    
-                    gameCache.remove(code);
-                }
+                event = new GameExecuteWaitEvent(dealerId, playerProfile.getPlayerId());
+
+                eventList.add(event);
+                return eventList;
+            }
+            
+            // Awaiting more players
+            if (gameCache.get(name).size() < game.requiredNumberOfPlayers())
+            {
+                gameCache.get(name).push(playerProfile);
+                event = new GameExecuteWaitEvent(dealerId, playerProfile.getPlayerId());
+
+                eventList.add(event);
+                return eventList;
+            }
+            
+            if (gameCache.get(name).size() == game.requiredNumberOfPlayers())
+            {
+                PlayerProfile[] players = new PlayerProfile[game.requiredNumberOfPlayers()];
+                Deque<PlayerProfile> requiredPlayers = gameCache.get(name);
+                int i = 0;
+                for (PlayerProfile player : requiredPlayers)
+                    players[i++] = player;
+
+                PlayerProfile winner = game.executeGame(players);
+                //response = new GameExecuteCompleteEvent(dealerId, winn)
+                gameCache.remove(name);
             }
         }
 
-        return response;
+        return eventList;
     }
 
 }

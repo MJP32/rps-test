@@ -1,14 +1,18 @@
 package com.tw.casino.connection.netty;
 
+import java.util.List;
 import java.util.Scanner;
 
+import com.tw.casino.IDealer;
 import com.tw.casino.actor.Dealer;
 import com.tw.casino.actor.Player;
 import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
+import com.tw.casino.connection.messages.GameExecuteEvent;
 import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
+import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
@@ -51,25 +55,28 @@ public final class DealerClient
             b.group(group)
             .channel(NioSocketChannel.class)
             .handler(new LoggingHandler(LogLevel.INFO))
-            .handler(new PlayerClientInitializer(sslCtx));
+            .handler(new CasinoClientInitializer(sslCtx));
 
             Channel channel = b.connect(HOST, PORT).sync().channel();
-            PlayerClientHandler handler = channel.pipeline().get(PlayerClientHandler.class);
+            CasinoClientHandler handler = channel.pipeline().get(CasinoClientHandler.class);
 
             // Operate here
-            Dealer dealer = new Dealer();
-            
+            IDealer dealer = new Dealer();
+
             System.out.println(CasinoConstants.WELCOME);
             GameDataRequest request = new GameDataRequest(dealer.getDealerId());
             GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
             dealer.handleGameDataResponse(response);
-            for (DealerGameDetails details : response.getGameData())
-                System.out.println(details.getName());
 
             Scanner scanner = new Scanner(System.in);
+            System.out.println(CasinoConstants.DEALER_READY);
+            
             while (true)
             {
-                System.out.println("To exit press x:");
+                GameExecuteEvent gameExecuteEvent = (GameExecuteEvent) handler.awaitEvent();
+                final List<Request> gameExecutedEvents = dealer.handleGameExecuteEvent(gameExecuteEvent);
+                for (Request event : gameExecutedEvents)
+                    handler.sendEvent(event);
 
                 String input = scanner.next();
                 if (input.equalsIgnoreCase("x"))
@@ -78,6 +85,7 @@ public final class DealerClient
                 }
             }
 
+            scanner.close();
             channel.close();
         }
         finally

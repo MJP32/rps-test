@@ -1,11 +1,14 @@
 package com.tw.casino.actor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import com.tw.casino.game.GameStrategy;
 
-public class PlayerProfile
+public class PlayerProfile implements Serializable
 {
+    private static final long serialVersionUID = -2706420094512247241L;
+
     private volatile int hashCode = 0;
     
     private final UUID playerId;
