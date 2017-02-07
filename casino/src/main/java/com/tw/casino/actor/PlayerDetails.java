@@ -8,16 +8,19 @@ import com.tw.casino.game.rps.RPSMove;
 
 public class PlayerDetails implements Serializable
 {
-    private static final long serialVersionUID = 1390543613319213716L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5456813864339299362L;
     private final UUID playerId;
     private final double entryFee;
-    private final RPSMove rpsMove;
+    private final GamePlay gamePlay;
     
-    public PlayerDetails(UUID playerId, double entryFee, RPSMove rpsMove)
+    public PlayerDetails(UUID playerId, double entryFee, GamePlay gamePlay)
     {
         this.playerId = playerId;
         this.entryFee = entryFee;
-        this.rpsMove = rpsMove;
+        this.gamePlay = gamePlay;
     }
 
     public UUID getPlayerId()
@@ -30,8 +33,8 @@ public class PlayerDetails implements Serializable
         return entryFee;
     }
 
-    public RPSMove getMove()
+    public GamePlay getGamePlay()
     {
-        return rpsMove;
+        return gamePlay;
     }
 }

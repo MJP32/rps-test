@@ -9,6 +9,7 @@ import com.tw.casino.actor.Player;
 import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
 import com.tw.casino.connection.messages.GameExecuteEvent;
+import com.tw.casino.connection.messages.GameExecuteEvent3;
 import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
@@ -68,8 +69,6 @@ public final class DealerClient
             GameDataRequest request = new GameDataRequest(dealer.getDealerId());
             GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
             dealer.handleGameDataResponse(response);
-            //String response = handler.sendRequestAndGetResponse(request);
-            //System.out.println(response);
 
             System.out.println(CasinoConstants.DEALER_READY);
 
@@ -86,10 +85,6 @@ public final class DealerClient
                 {
                     break;
                 }
-                //String awaitedResponse = handler.awaitEvent();
-
-                //for (Request event : gameExecutedEvents)
-                //    handler.sendEvent(event);
             }
 
             channel.close();

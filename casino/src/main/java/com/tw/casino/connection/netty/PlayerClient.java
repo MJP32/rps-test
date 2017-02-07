@@ -38,7 +38,7 @@ public final class PlayerClient
     static
     {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nMAIN MENU");
+        stringBuilder.append("\nMAIN MENU\n");
         stringBuilder.append("* To request games press G.\n");
         stringBuilder.append("* To play any available game enter game code.\n");
         stringBuilder.append("* Update your account balance press U.\n");
@@ -113,7 +113,14 @@ public final class PlayerClient
 
             Request request = null;
             Response response = null;
+            
+            // Get List of Games
+            request = player.createGameListRequest();
             List<GameDetails> gameDetails = new ArrayList<GameDetails>();
+            GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
+            gameDetails.addAll(gameListResponse.getAvailableGames());
+            player.handleGameListResponse(gameListResponse);
+            
             while (true)
             {
                 System.out.println(MENU);
@@ -124,7 +131,7 @@ public final class PlayerClient
                 if (choice == 'g' || choice == 'G')
                 {
                     request = player.createGameListRequest();
-                    GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
+                    gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
                     gameDetails.clear();
                     gameDetails.addAll(gameListResponse.getAvailableGames());
 

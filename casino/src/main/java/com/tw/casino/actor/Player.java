@@ -84,7 +84,7 @@ public class Player implements IPlayer
         
         // TODO Add support to load strategy
         GamePlay play = new RPSPlay(RPSMove.ROCK);
-        PlayerDetails profile = new PlayerDetails(playerId, entryFee, RPSMove.ROCK);
+        PlayerDetails profile = new PlayerDetails(playerId, entryFee, play);
         GameRequest request = new GameRequest(profile, name);
         
         return request;

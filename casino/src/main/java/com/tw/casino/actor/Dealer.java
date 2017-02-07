@@ -23,6 +23,7 @@ import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
+import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.RockPaperScissors;
 
 
@@ -75,6 +76,9 @@ public class Dealer implements IDealer
     public List<Request> handleGameExecuteEvent(GameExecuteEvent gameExecuteEvent)
     {
         System.out.println("Received Game To execute!");
+        System.out.println(gameExecuteEvent.getGameName());
+        System.out.println(gameExecuteEvent.getPlayerDetails().getPlayerId());
+        System.out.println(((RPSPlay)(gameExecuteEvent.getPlayerDetails().getGamePlay())).getMove());
         List<Request> eventList = new ArrayList<Request>();
         Request event = null;
         synchronized (this)

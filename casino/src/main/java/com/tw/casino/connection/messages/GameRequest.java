@@ -6,8 +6,11 @@ import com.tw.casino.actor.PlayerDetails;
 
 public class GameRequest extends BaseRequest implements Serializable
 {
-    private static final long serialVersionUID = -4840163434885437234L;
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4149422969320726234L;
     private final PlayerDetails playerDetails;
     private final String gameName;
     
@@ -18,7 +21,7 @@ public class GameRequest extends BaseRequest implements Serializable
         this.gameName = gameName;
     }
 
-    public PlayerDetails getPlayerProfile()
+    public PlayerDetails getPlayerDetails()
     {
         return playerDetails;
     }
