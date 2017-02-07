@@ -75,8 +75,9 @@ public final class DealerClient
                 Message event = handler.awaitEvent();
                 if (event instanceof GameRequest)
                 {
-                    final List<Message> gameExecutedEvents = 
+                    final Message gameExecutedEvent = 
                             dealer.handleGameExecuteEvent((GameRequest) event);
+                    handler.sendEvent(gameExecutedEvent);
                 }
                 else if (event instanceof TerminateEvent)
                 {

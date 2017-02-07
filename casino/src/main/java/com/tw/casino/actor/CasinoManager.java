@@ -16,13 +16,17 @@ import com.tw.casino.util.CasinoConstants;
 public class CasinoManager
 {
     private static final String DEFAULT_GAME = CasinoConstants.RPS;
+    private static final double DEFAULT_INITIAL_HOUSE_BALANCE = 0;
     
+    private double houseAccountBalance;
     private GameDataLoader gameDataLoader;
     private CopyOnWriteArrayList<UUID> dealerRegistry;
     private ConcurrentMap<String, List<UUID>> gameDealerCache;
     
     public CasinoManager()
     {
+        
+        this.houseAccountBalance = DEFAULT_INITIAL_HOUSE_BALANCE;
         this.gameDataLoader = new DefaultGameDataLoader();
         this.dealerRegistry = new CopyOnWriteArrayList<>();
         this.gameDealerCache = new ConcurrentHashMap<>();
@@ -38,6 +42,16 @@ public class CasinoManager
         }
     }
     
+    public double getHouseAccountBalance()
+    {
+        return houseAccountBalance;
+    }
+
+    public void updateHouseAccountBalance(double houseDeposit)
+    {
+        this.houseAccountBalance += houseDeposit;
+    }
+
     public List<GameDetails> getGameDetailsList()
     {
         return gameDataLoader.availableGames();

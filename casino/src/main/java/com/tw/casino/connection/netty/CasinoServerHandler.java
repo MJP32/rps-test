@@ -1,11 +1,16 @@
 package com.tw.casino.connection.netty;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.tw.casino.actor.CasinoManager;
+import com.tw.casino.connection.messages.BaseGameResponse;
+import com.tw.casino.connection.messages.CasinoGameCompleteResponse;
+import com.tw.casino.connection.messages.GameCompleteResponse;
 import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
 import com.tw.casino.connection.messages.GameListRequest;
@@ -51,7 +56,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
 
             response = new 
                     GameListResponse(gameListRequest.getPlayerId(), gameDetailsList);
-            
+
             ctx.write(response);
         }
         else if (request instanceof GameDataRequest)
@@ -65,7 +70,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
 
             List<DealerGameDetails> gameData = casinoManager.getGameData();
             response = new GameDataResponse(gameDataRequest.getDealerId(), gameData);
-            
+
             ctx.write(response);
         }
         else if (request instanceof GameRequest)
@@ -74,8 +79,6 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
             String name = gameRequest.getGameName();
             UUID assignedDealer = casinoManager.assignDealerForGame(name);
             Channel dealerContext = DEALER_CHANNEL_CACHE.get(assignedDealer);
-            
-            //response = new GameExecuteEvent(assignedDealer, gameRequest.getPlayerDetails(), name);
             
             // Forward to Dealer
             ChannelFuture future = dealerContext.writeAndFlush(gameRequest);
@@ -86,47 +89,48 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
                 {
                 }});
         }
-        else if (request instanceof GameWaitResponse)
+        else if (request instanceof BaseGameResponse)
         {
-            GameWaitResponse waitEvent = (GameWaitResponse) request;
-            UUID playerId = waitEvent.getPlayerId();
-            Channel playerContext = PLAYER_CHANNEL_CACHE.get(playerId);
-            
-            //response = new GameWaitResponse(playerId);
-            
+            // Handles Reject or Wait Response
+            BaseGameResponse gameResponse = (BaseGameResponse) request;
+            UUID playerId = gameResponse.getPlayerId();
+            Channel playerChannel = PLAYER_CHANNEL_CACHE.get(playerId);
+
             // Forward to Player
-            ChannelFuture future = playerContext.writeAndFlush(request);
+            ChannelFuture future = playerChannel.writeAndFlush(gameResponse);
             future.addListener(new ChannelFutureListener(){
 
                 @Override
                 public void operationComplete(ChannelFuture arg0) throws Exception
                 {
                     //playerContext.flush();
-                    
-                }});           
-        }
-        else if (request instanceof GameRejectResponse)
-        {
-            GameRejectResponse waitEvent = (GameRejectResponse) request;
-            UUID playerId = waitEvent.getPlayerId();
-            Channel playerContext = PLAYER_CHANNEL_CACHE.get(playerId);
-            
-            //response = new GameRejectResponse(playerId);
-            
-            // Forward to Player
-            ChannelFuture future = playerContext.writeAndFlush(waitEvent);
-            future.addListener(new ChannelFutureListener(){
-
-                @Override
-                public void operationComplete(ChannelFuture arg0) throws Exception
-                {
-                    //playerContext.flush();
-                    
                 }});       
         }
+        else if (request instanceof CasinoGameCompleteResponse)
+        {
+            CasinoGameCompleteResponse gameComplete = (CasinoGameCompleteResponse) request;
 
-        
+            if (gameComplete.getHouseDeposit() > 0)
+                casinoManager.updateHouseAccountBalance(gameComplete.getHouseDeposit());
 
+            for (Entry<UUID, Double> playerResults : gameComplete.getPlayerResults().entrySet())
+            {
+                UUID playerId = playerResults.getKey();
+                double playerReturn = playerResults.getValue();
+                response = new GameCompleteResponse(playerId, playerReturn);
+                Channel playerChannel = PLAYER_CHANNEL_CACHE.get(playerId);
+                
+                // Forward to Player
+                ChannelFuture future = playerChannel.writeAndFlush(response);
+                future.addListener(new ChannelFutureListener(){
+
+                    @Override
+                    public void operationComplete(ChannelFuture arg0) throws Exception
+                    {
+                        //playerContext.flush();
+                    }}); 
+            }              
+        }
     }
 
     @Override

@@ -13,5 +13,5 @@ public interface IDealer
     
     void handleGameDataResponse(GameDataResponse gameDataResponse);
     
-    List<Message> handleGameExecuteEvent(GameRequest gameExecuteEvent);
+    Message handleGameExecuteEvent(GameRequest gameExecuteEvent);
 }

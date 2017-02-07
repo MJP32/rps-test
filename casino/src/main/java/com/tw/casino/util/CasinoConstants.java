@@ -24,4 +24,8 @@ public class CasinoConstants
     
     // Game
     public static final String RPS = "Rock-Paper-Scissors";
+    public static final Object WINNER = "Winner";
+    // If it is a tie every player falls into the category of others
+    public static final Object OTHERS = "Did Not Win";
+    public static final Object TIE = "Game Match Tied";
 }

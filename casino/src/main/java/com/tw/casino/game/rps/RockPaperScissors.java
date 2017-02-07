@@ -3,7 +3,9 @@ package com.tw.casino.game.rps;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.tw.casino.IPlayer;
 import com.tw.casino.actor.PlayerDetails;
@@ -51,11 +53,22 @@ public class RockPaperScissors implements Game, Serializable
         return entryFee;
     }
     
+
     @Override
-    public PlayerDetails executeGame(PlayerDetails[] players)
+    public double payOut()
     {
+        return (requiredPlayers * entryFee);
+    }
+    
+    @Override
+    public Map<String, List<PlayerDetails>> playMatch(PlayerDetails[] players)
+    {
+        // TODO FIX THIS
         if (players.length != this.requiredPlayers)
             throw new IllegalStateException("Invalid number of players in the game.");
+        
+        ConcurrentHashMap<String, List<PlayerDetails>> results = 
+                new ConcurrentHashMap<String, List<PlayerDetails>>();
         
         PlayerDetails playerOne = players[0];
         PlayerDetails playerTwo = players[1];
@@ -79,7 +92,7 @@ public class RockPaperScissors implements Game, Serializable
         else if (playerOneMove == playerTwoMove)
             winner = null;
 
-        return winner;
+        return results;
     }
 
 }
