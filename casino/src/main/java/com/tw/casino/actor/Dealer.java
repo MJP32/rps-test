@@ -14,13 +14,10 @@ import java.util.concurrent.Future;
 
 import com.tw.casino.IDealer;
 import com.tw.casino.connection.messages.GameDataResponse;
-import com.tw.casino.connection.messages.GameExecuteEvent;
-import com.tw.casino.connection.messages.GameExecuteRejectEvent;
-import com.tw.casino.connection.messages.GameExecuteWaitEvent;
 import com.tw.casino.connection.messages.GameRejectResponse;
+import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
-import com.tw.casino.connection.messages.Request;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.rps.RPSPlay;
@@ -73,14 +70,14 @@ public class Dealer implements IDealer
     }
 
     @Override
-    public List<Request> handleGameExecuteEvent(GameExecuteEvent gameExecuteEvent)
+    public List<Message> handleGameExecuteEvent(GameRequest gameExecuteEvent)
     {
         System.out.println("Received Game To execute!");
         System.out.println(gameExecuteEvent.getGameName());
         System.out.println(gameExecuteEvent.getPlayerDetails().getPlayerId());
         System.out.println(((RPSPlay)(gameExecuteEvent.getPlayerDetails().getGamePlay())).getMove());
-        List<Request> eventList = new ArrayList<Request>();
-        Request event = null;
+        List<Message> eventList = new ArrayList<>();
+        Message event = null;
         synchronized (this)
         {
             /*String name = gameExecuteEvent.getGameName();

@@ -2,7 +2,7 @@ package com.tw.casino.connection.messages;
 
 import java.io.Serializable;
 
-public class TerminateEvent extends BaseResponse implements Serializable
+public class TerminateEvent extends Response implements Serializable
 {
 
     /**

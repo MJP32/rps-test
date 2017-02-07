@@ -8,13 +8,10 @@ import com.tw.casino.actor.Dealer;
 import com.tw.casino.actor.Player;
 import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
-import com.tw.casino.connection.messages.GameExecuteEvent;
-import com.tw.casino.connection.messages.GameExecuteEvent3;
 import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
-import com.tw.casino.connection.messages.Request;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.TerminateEvent;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
@@ -75,11 +72,11 @@ public final class DealerClient
             while (true)
             {
                 System.out.println("Waiting for request...");
-                Response event = handler.awaitEvent();
-                if (event instanceof GameExecuteEvent)
+                Message event = handler.awaitEvent();
+                if (event instanceof GameRequest)
                 {
-                    final List<Request> gameExecutedEvents = 
-                            dealer.handleGameExecuteEvent((GameExecuteEvent) event);
+                    final List<Message> gameExecutedEvents = 
+                            dealer.handleGameExecuteEvent((GameRequest) event);
                 }
                 else if (event instanceof TerminateEvent)
                 {

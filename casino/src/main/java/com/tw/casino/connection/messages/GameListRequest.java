@@ -3,10 +3,13 @@ package com.tw.casino.connection.messages;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class GameListRequest extends BaseRequest implements Serializable
+public class GameListRequest extends Request implements Serializable
 {
-    private static final long serialVersionUID = -7565128141274554404L;
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7565128141274554404L;
     private final UUID playerId;
     
     public GameListRequest(UUID playerId)

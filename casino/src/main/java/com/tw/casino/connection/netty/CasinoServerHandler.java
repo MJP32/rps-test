@@ -8,17 +8,12 @@ import java.util.concurrent.ConcurrentMap;
 import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
-import com.tw.casino.connection.messages.GameExecuteEvent;
-import com.tw.casino.connection.messages.GameExecuteEvent3;
-import com.tw.casino.connection.messages.GameExecuteRejectEvent;
-import com.tw.casino.connection.messages.GameExecuteWaitEvent;
 import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
-import com.tw.casino.connection.messages.Request;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
@@ -29,7 +24,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
+public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
 {
     private CasinoManager casinoManager;
 
@@ -42,10 +37,10 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Request request)
+    protected void channelRead0(ChannelHandlerContext ctx, Message request)
             throws Exception
     {
-        Response response = null;
+        Message response = null;
         if (request instanceof GameListRequest)
         {
             GameListRequest gameListRequest = (GameListRequest) request;
@@ -80,10 +75,10 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
             UUID assignedDealer = casinoManager.assignDealerForGame(name);
             Channel dealerContext = DEALER_CHANNEL_CACHE.get(assignedDealer);
             
-            response = new GameExecuteEvent(assignedDealer, gameRequest.getPlayerDetails(), name);
+            //response = new GameExecuteEvent(assignedDealer, gameRequest.getPlayerDetails(), name);
             
             // Forward to Dealer
-            ChannelFuture future = dealerContext.writeAndFlush(response);
+            ChannelFuture future = dealerContext.writeAndFlush(gameRequest);
             future.addListener(new ChannelFutureListener(){
 
                 @Override
@@ -91,16 +86,16 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
                 {
                 }});
         }
-        else if (request instanceof GameExecuteWaitEvent)
+        else if (request instanceof GameWaitResponse)
         {
-            GameExecuteWaitEvent waitEvent = (GameExecuteWaitEvent) request;
+            GameWaitResponse waitEvent = (GameWaitResponse) request;
             UUID playerId = waitEvent.getPlayerId();
             Channel playerContext = PLAYER_CHANNEL_CACHE.get(playerId);
             
-            response = new GameWaitResponse(playerId);
+            //response = new GameWaitResponse(playerId);
             
             // Forward to Player
-            ChannelFuture future = playerContext.writeAndFlush(response);
+            ChannelFuture future = playerContext.writeAndFlush(request);
             future.addListener(new ChannelFutureListener(){
 
                 @Override
@@ -110,16 +105,16 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
                     
                 }});           
         }
-        else if (request instanceof GameExecuteRejectEvent)
+        else if (request instanceof GameRejectResponse)
         {
-            GameExecuteRejectEvent waitEvent = (GameExecuteRejectEvent) request;
+            GameRejectResponse waitEvent = (GameRejectResponse) request;
             UUID playerId = waitEvent.getPlayerId();
             Channel playerContext = PLAYER_CHANNEL_CACHE.get(playerId);
             
-            response = new GameRejectResponse(playerId);
+            //response = new GameRejectResponse(playerId);
             
             // Forward to Player
-            ChannelFuture future = playerContext.writeAndFlush(response);
+            ChannelFuture future = playerContext.writeAndFlush(waitEvent);
             future.addListener(new ChannelFutureListener(){
 
                 @Override

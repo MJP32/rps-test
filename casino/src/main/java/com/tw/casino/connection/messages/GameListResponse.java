@@ -7,10 +7,13 @@ import java.util.UUID;
 
 import com.tw.casino.game.GameDetails;
 
-public class GameListResponse extends BaseResponse implements Serializable
+public class GameListResponse extends Response implements Serializable
 {
-    private static final long serialVersionUID = 708050025747084291L;
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 708050025747084291L;
     private final UUID playerId;
     private final List<GameDetails> availableGames;
     

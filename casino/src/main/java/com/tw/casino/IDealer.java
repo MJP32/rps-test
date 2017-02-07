@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tw.casino.connection.messages.GameDataResponse;
-import com.tw.casino.connection.messages.GameExecuteEvent;
-import com.tw.casino.connection.messages.GameExecuteEvent3;
-import com.tw.casino.connection.messages.Request;
+import com.tw.casino.connection.messages.GameRequest;
+import com.tw.casino.connection.messages.Message;
 
 public interface IDealer 
 {
@@ -14,5 +13,5 @@ public interface IDealer
     
     void handleGameDataResponse(GameDataResponse gameDataResponse);
     
-    List<Request> handleGameExecuteEvent(GameExecuteEvent gameExecuteEvent);
+    List<Message> handleGameExecuteEvent(GameRequest gameExecuteEvent);
 }

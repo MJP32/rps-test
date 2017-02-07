@@ -3,17 +3,16 @@ package com.tw.casino.connection.netty;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tw.casino.connection.messages.Request;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class CasinoClientHandler extends SimpleChannelInboundHandler<Response>
+public class CasinoClientHandler extends SimpleChannelInboundHandler<Message>
 {
     private volatile Channel channel;
-    private final BlockingQueue<Response> responseQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> responseQueue = new LinkedBlockingQueue<>();
     
     public CasinoClientHandler()
     {
@@ -26,11 +25,11 @@ public class CasinoClientHandler extends SimpleChannelInboundHandler<Response>
      * @param request
      * @return
      */
-    public Response sendRequestAndGetResponse(Request request)
+    public Message sendRequestAndGetResponse(Message request)
     {
         channel.writeAndFlush(request);
         
-        Response response = null;
+        Message response = null;
         boolean interrupted = false;
         for (;;)
         {
@@ -58,9 +57,9 @@ public class CasinoClientHandler extends SimpleChannelInboundHandler<Response>
      * 
      * @return
      */
-    public Response awaitEvent()
+    public Message awaitEvent()
     {
-        Response response = null;
+        Message response = null;
         boolean interrupted = false;
         for (;;)
         {
@@ -83,7 +82,7 @@ public class CasinoClientHandler extends SimpleChannelInboundHandler<Response>
         return response;
     }
     
-    public void sendEvent(Request event)
+    public void sendEvent(Message event)
     {
         channel.writeAndFlush(event);
     }
@@ -96,7 +95,7 @@ public class CasinoClientHandler extends SimpleChannelInboundHandler<Response>
     }
     
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Response response)
+    public void channelRead0(ChannelHandlerContext ctx, Message response)
             throws Exception
     {
         responseQueue.add(response);

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.tw.casino.actor.PlayerDetails;
 
-public class GameRequest extends BaseRequest implements Serializable
+public class GameRequest extends Request implements Serializable
 {
     
     /**

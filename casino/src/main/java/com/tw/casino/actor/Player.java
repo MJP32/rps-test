@@ -5,14 +5,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.tw.casino.IPlayer;
-import com.tw.casino.connection.messages.BaseGameResponse;
 import com.tw.casino.connection.messages.GameCompleteResponse;
 import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
@@ -116,7 +115,7 @@ public class Player implements IPlayer
         System.out.println(stringBuilder.toString());
     }
     
-    public void handleGameResponse(Response gameResponse)
+    public void handleGameResponse(Message gameResponse)
     {
         if (gameResponse instanceof GameWaitResponse)
         {

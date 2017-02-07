@@ -12,8 +12,7 @@ import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
-import com.tw.casino.connection.messages.Request;
-import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.util.CasinoConstants;
 
@@ -111,8 +110,8 @@ public final class PlayerClient
             double startBalance = getStartBalance();
             player = new Player(startBalance);
 
-            Request request = null;
-            Response response = null;
+            Message request = null;
+            Message response = null;
             
             // Get List of Games
             request = player.createGameListRequest();
