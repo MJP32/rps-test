@@ -14,7 +14,10 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.GameDetails;
+import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
+import com.tw.casino.game.rps.RPSMove;
+import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.util.CasinoConstants;
 
 public class Player implements IPlayer 
@@ -79,7 +82,9 @@ public class Player implements IPlayer
         double entryFee = details.getEntryFee();
         accountBalance = accountBalance - entryFee;
         
-        PlayerProfile profile = new PlayerProfile(playerId, entryFee, strategy);
+        // TODO Add support to load strategy
+        GamePlay play = new RPSPlay(RPSMove.ROCK);
+        PlayerDetails profile = new PlayerDetails(playerId, entryFee, RPSMove.ROCK);
         GameRequest request = new GameRequest(profile, name);
         
         return request;

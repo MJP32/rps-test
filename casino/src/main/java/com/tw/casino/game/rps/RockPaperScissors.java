@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.tw.casino.IPlayer;
-import com.tw.casino.actor.PlayerProfile;
+import com.tw.casino.actor.PlayerDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameId;
 import com.tw.casino.util.CasinoConstants;
@@ -52,18 +52,18 @@ public class RockPaperScissors implements Game, Serializable
     }
     
     @Override
-    public PlayerProfile executeGame(PlayerProfile[] players)
+    public PlayerDetails executeGame(PlayerDetails[] players)
     {
         if (players.length != this.requiredPlayers)
             throw new IllegalStateException("Invalid number of players in the game.");
         
-        PlayerProfile playerOne = players[0];
-        PlayerProfile playerTwo = players[1];
+        PlayerDetails playerOne = players[0];
+        PlayerDetails playerTwo = players[1];
         
         RPSMove playerOneMove = RPSMove.PAPER;
         RPSMove playerTwoMove = RPSMove.SCISSORS;
         
-        PlayerProfile winner = null;
+        PlayerDetails winner = null;
         if (playerOneMove == RPSMove.PAPER && playerTwoMove == RPSMove.ROCK)
             winner = playerOne;
         else if (playerOneMove == RPSMove.ROCK && playerTwoMove == RPSMove.SCISSORS)

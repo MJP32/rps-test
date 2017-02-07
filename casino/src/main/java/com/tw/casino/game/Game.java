@@ -2,7 +2,8 @@ package com.tw.casino.game;
 
 import java.util.Collection;
 
-import com.tw.casino.actor.PlayerProfile;
+import com.tw.casino.actor.PlayerDetails;
+
 
 public interface Game
 {
@@ -37,5 +38,5 @@ public interface Game
      * @param players
      * @return
      */
-    PlayerProfile executeGame(PlayerProfile[] players);
+    PlayerDetails executeGame(PlayerDetails[] players);
 }

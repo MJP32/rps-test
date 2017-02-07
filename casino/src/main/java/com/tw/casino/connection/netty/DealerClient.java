@@ -14,6 +14,7 @@ import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
+import com.tw.casino.connection.messages.TerminateEvent;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.util.CasinoConstants;
@@ -67,25 +68,30 @@ public final class DealerClient
             GameDataRequest request = new GameDataRequest(dealer.getDealerId());
             GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
             dealer.handleGameDataResponse(response);
+            //String response = handler.sendRequestAndGetResponse(request);
+            //System.out.println(response);
 
-            Scanner scanner = new Scanner(System.in);
             System.out.println(CasinoConstants.DEALER_READY);
-            
+
             while (true)
             {
-                GameExecuteEvent gameExecuteEvent = (GameExecuteEvent) handler.awaitEvent();
-                final List<Request> gameExecutedEvents = dealer.handleGameExecuteEvent(gameExecuteEvent);
-                for (Request event : gameExecutedEvents)
-                    handler.sendEvent(event);
-
-                String input = scanner.next();
-                if (input.equalsIgnoreCase("x"))
+                System.out.println("Waiting for request...");
+                Response event = handler.awaitEvent();
+                if (event instanceof GameExecuteEvent)
+                {
+                    final List<Request> gameExecutedEvents = 
+                            dealer.handleGameExecuteEvent((GameExecuteEvent) event);
+                }
+                else if (event instanceof TerminateEvent)
                 {
                     break;
                 }
+                //String awaitedResponse = handler.awaitEvent();
+
+                //for (Request event : gameExecutedEvents)
+                //    handler.sendEvent(event);
             }
 
-            scanner.close();
             channel.close();
         }
         finally

@@ -22,6 +22,7 @@ import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,7 +32,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
 {
     private CasinoManager casinoManager;
 
-    private static final ConcurrentMap<UUID, ChannelHandlerContext> DEALER_CONTEXT_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<UUID, Channel> DEALER_CONTEXT_CACHE = new ConcurrentHashMap<>();
     private static final ConcurrentMap<UUID, ChannelHandlerContext> PLAYER_CONTEXT_CACHE = new ConcurrentHashMap<>();
 
     public CasinoServerHandler(CasinoManager casinoManager)
@@ -64,10 +65,11 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
             casinoManager.registerDealer(gameDataRequest.getDealerId());
 
             // Store the ChannelHandlerContext for dealer
-            DEALER_CONTEXT_CACHE.putIfAbsent(gameDataRequest.getDealerId(), ctx);
+            DEALER_CONTEXT_CACHE.putIfAbsent(gameDataRequest.getDealerId(), ctx.channel());
 
             List<DealerGameDetails> gameData = casinoManager.getGameData();
             response = new GameDataResponse(gameDataRequest.getDealerId(), gameData);
+            //String resp = "Game List for you";
             
             ctx.write(response);
         }
@@ -76,18 +78,21 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Request>
             GameRequest gameRequest = (GameRequest) request;
             String name = gameRequest.getGameName();
             UUID assignedDealer = casinoManager.assignDealerForGame(name);
-            ChannelHandlerContext dealerContext = DEALER_CONTEXT_CACHE.get(assignedDealer);
+            //ChannelHandlerContext dealerContext = DEALER_CONTEXT_CACHE.get(assignedDealer);
+            Channel dealerContext = DEALER_CONTEXT_CACHE.get(assignedDealer);
             
-            response = new GameExecuteEvent(assignedDealer, gameRequest.getPlayerProfile(), name);
+            response = new GameExecuteEvent(assignedDealer, name);
+            //String simple = "Player asked for game.";
             
             // Forward to Dealer
-            ChannelFuture future = dealerContext.write(response);
+            ChannelFuture future = dealerContext.writeAndFlush(response);
             future.addListener(new ChannelFutureListener(){
 
                 @Override
                 public void operationComplete(ChannelFuture arg0) throws Exception
                 {
-                    dealerContext.flush();
+                    //dealerContext.flush();
+                    System.out.println("Game Execute Event sent");
                     
                 }});
         }

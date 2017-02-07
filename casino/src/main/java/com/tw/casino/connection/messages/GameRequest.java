@@ -1,27 +1,26 @@
 package com.tw.casino.connection.messages;
 
 import java.io.Serializable;
-import java.util.UUID;
 
-import com.tw.casino.actor.PlayerProfile;
+import com.tw.casino.actor.PlayerDetails;
 
 public class GameRequest extends BaseRequest implements Serializable
 {
-    private static final long serialVersionUID = 1436436035219299645L;
+    private static final long serialVersionUID = -4840163434885437234L;
     
-    private final PlayerProfile playerProfile;
+    private final PlayerDetails playerDetails;
     private final String gameName;
     
     
-    public GameRequest(PlayerProfile playerProfile, String gameName)
+    public GameRequest(PlayerDetails playerDetails, String gameName)
     {
-        this.playerProfile = playerProfile;
+        this.playerDetails = playerDetails;
         this.gameName = gameName;
     }
 
-    public PlayerProfile getPlayerProfile()
+    public PlayerDetails getPlayerProfile()
     {
-        return playerProfile;
+        return playerDetails;
     }
 
     public String getGameName()

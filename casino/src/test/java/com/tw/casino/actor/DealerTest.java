@@ -19,6 +19,9 @@ import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
+import com.tw.casino.game.GamePlay;
+import com.tw.casino.game.rps.RPSMove;
+import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.RPSStrategy;
 import com.tw.casino.game.rps.RockPaperScissors;
 import com.tw.casino.util.CasinoConstants;
@@ -38,9 +41,9 @@ public class DealerTest extends TestCase
 
     private GameExecuteEvent gameExecuteEvent;
     
-    private PlayerProfile playerOne;
+    private PlayerDetails playerOne;
     //private PlayerProfile playerTwo;
-    private PlayerProfile playerThree;
+    private PlayerDetails playerThree;
     
     @Test
     public void testHandleGameDataResponseCachesGames()
@@ -53,8 +56,8 @@ public class DealerTest extends TestCase
     public void testHandleGameRequestCreatesNewGame()
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
-        playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());
-        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
+        playerOne = new PlayerDetails(UUID.randomUUID(), 5.0, RPSMove.ROCK);
+        gameExecuteEvent = null; //new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
         
         List<Request> responses = dealer.handleGameExecuteEvent(gameExecuteEvent);
         Request executedEvent = responses.get(0);
@@ -66,12 +69,12 @@ public class DealerTest extends TestCase
     public void testHandleGameRequestAsksRepeatedRequestsToWait()
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
-        playerOne = new PlayerProfile(UUID.randomUUID(), 5.0, new RPSStrategy());      
-        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
+        playerOne = new PlayerDetails(UUID.randomUUID(), 5.0, RPSMove.ROCK);      
+        gameExecuteEvent = null; //new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
         
         dealer.handleGameExecuteEvent(gameExecuteEvent);
         
-        GameExecuteEvent anotherGameRequest = new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
+        GameExecuteEvent anotherGameRequest = null;//new GameExecuteEvent(dealer.getDealerId(), playerOne, CasinoConstants.RPS);
         List<Request> responses = dealer.handleGameExecuteEvent(anotherGameRequest);
         Request executedEvent = responses.get(0);
         
@@ -84,8 +87,8 @@ public class DealerTest extends TestCase
     {
         dealer.handleGameDataResponse(new GameDataResponse(dealer.getDealerId(), games));
 
-        playerThree = new PlayerProfile(UUID.randomUUID(), 4.0, new RPSStrategy());
-        gameExecuteEvent = new GameExecuteEvent(dealer.getDealerId(), playerThree, CasinoConstants.RPS);
+        playerThree = new PlayerDetails(UUID.randomUUID(), 4.0, RPSMove.ROCK);
+        gameExecuteEvent = null;//new GameExecuteEvent(dealer.getDealerId(), playerThree, CasinoConstants.RPS);
         List<Request> responses = dealer.handleGameExecuteEvent(gameExecuteEvent);
         Request executedEvent = responses.get(0);
         

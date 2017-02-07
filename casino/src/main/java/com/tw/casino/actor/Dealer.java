@@ -31,7 +31,7 @@ public class Dealer implements IDealer
     private UUID dealerId;
 
     private final ConcurrentMap<String, Game> availableGames;
-    private final ConcurrentMap<String, Deque<PlayerProfile>> gameCache;
+    private final ConcurrentMap<String, Deque<PlayerDetails>> gameCache;
 
     public Dealer()
     {
@@ -51,7 +51,7 @@ public class Dealer implements IDealer
         return availableGames;
     }
 
-    public Map<String, Deque<PlayerProfile>> getGameCache()
+    public Map<String, Deque<PlayerDetails>> getGameCache()
     {
         return gameCache;
     }
@@ -74,15 +74,16 @@ public class Dealer implements IDealer
     @Override
     public List<Request> handleGameExecuteEvent(GameExecuteEvent gameExecuteEvent)
     {
+        System.out.println("Received Game To execute!");
         List<Request> eventList = new ArrayList<Request>();
         Request event = null;
         synchronized (this)
         {
-            String name = gameExecuteEvent.getGameName();
+            /*String name = gameExecuteEvent.getGameName();
             Game game = availableGames.get(name);
 
             // Validate Player
-            PlayerProfile playerProfile = gameExecuteEvent.getPlayerProfile();
+            PlayerDetails playerProfile = gameExecuteEvent.getPlayerDetails();
             double entryFee = playerProfile.getEntryFee();
             if (entryFee < game.entryFee())
             {
@@ -95,7 +96,7 @@ public class Dealer implements IDealer
             // Check if gameCache has an entry (game is waiting for players)
             if (!gameCache.containsKey(name))
             {
-                Deque<PlayerProfile> requiredPlayers = new ConcurrentLinkedDeque<>();
+                Deque<PlayerDetails> requiredPlayers = new ConcurrentLinkedDeque<>();
                 requiredPlayers.push(playerProfile);
                 gameCache.put(name, requiredPlayers);
                 event = new GameExecuteWaitEvent(dealerId, playerProfile.getPlayerId());
@@ -125,16 +126,16 @@ public class Dealer implements IDealer
             
             if (gameCache.get(name).size() == game.requiredNumberOfPlayers())
             {
-                PlayerProfile[] players = new PlayerProfile[game.requiredNumberOfPlayers()];
-                Deque<PlayerProfile> requiredPlayers = gameCache.get(name);
+                PlayerDetails[] players = new PlayerDetails[game.requiredNumberOfPlayers()];
+                Deque<PlayerDetails> requiredPlayers = gameCache.get(name);
                 int i = 0;
-                for (PlayerProfile player : requiredPlayers)
+                for (PlayerDetails player : requiredPlayers)
                     players[i++] = player;
 
-                PlayerProfile winner = game.executeGame(players);
+                PlayerDetails winner = game.executeGame(players);
                 //response = new GameExecuteCompleteEvent(dealerId, winn)
                 gameCache.remove(name);
-            }
+            }*/
         }
 
         return eventList;
