@@ -1,7 +1,9 @@
 package com.tw.casino.connection.netty;
 
+import com.tw.casino.ICasinoManager;
 import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.actor.CasinoManager;
+import com.tw.casino.util.CasinoConstants;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -18,8 +20,25 @@ public final class CasinoServer
     static final boolean SSL = System.getProperty("ssl") != null;
     static final int PORT = Integer.parseInt(System.getProperty("port", "8463"));
     
+    public static void displayStartup()
+    {
+        System.out.println(CasinoConstants.STARTUP_SERVER);
+    }
+    
     public static void main(String[] args) throws Exception
     {
+        // Get start up args
+        int port = 0;
+        try
+        {
+            port = Integer.parseInt(args[0]);
+        }
+        catch (NumberFormatException e)
+        {
+            displayStartup();
+            
+        }
+        
         final SslContext sslCtx;
         if (SSL)
         {
@@ -34,7 +53,7 @@ public final class CasinoServer
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         
-        CasinoManager casinoManager = new CasinoManager();
+        ICasinoManager casinoManager = new CasinoManager();
         
         // Run startup configuration tasks
         casinoManager.initialize();
@@ -47,7 +66,7 @@ public final class CasinoServer
             .handler(new LoggingHandler(LogLevel.INFO))
             .childHandler(new CasinoServerInitializer(sslCtx, casinoManager));
             
-            b.bind(PORT).sync().channel().closeFuture().sync();
+            b.bind(port).sync().channel().closeFuture().sync();
             
         }
         finally

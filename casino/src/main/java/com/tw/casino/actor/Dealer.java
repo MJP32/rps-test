@@ -36,8 +36,6 @@ import com.tw.casino.util.CasinoConstants;
 
 public class Dealer implements IDealer 
 {
-    private static final int INITIAL_QUEUE_CAPACITY = 5;
-
     private final UUID dealerId;
 
     private final ConcurrentMap<String, Game> availableGames;
@@ -58,9 +56,17 @@ public class Dealer implements IDealer
         return dealerId;
     }
 
+    // For Test
     public Map<String, Game> getAvailableGames()
     {
         return availableGames;
+    }
+    
+
+    // For Test
+    public ConcurrentMap<String, PriorityBlockingQueue<GameContext>> getLiveGameCache()
+    {
+        return liveGameCache;
     }
 
     @Override
@@ -70,27 +76,21 @@ public class Dealer implements IDealer
         {
             for (DealerGameDetails gameData : gameDataResponse.getGameData())
             {
-                availableGames.put(gameData.getName(), createGame(gameData.getEntryFee(), 
-                        gameData.isAllowStrategy()));
+                availableGames.put(gameData.getName(), createGame(gameData.getEntryFee()));
                 liveGameCache.put(gameData.getName(), new PriorityBlockingQueue<GameContext>());
             }
         }
     }
 
-    private Game createGame(double entryFee, boolean allowStrategy)
+    private Game createGame(double entryFee)
     {
         // TODO Use GameFactory here
         return new TwoPlayerRockPaperScissors(entryFee);
     }
 
     @Override
-    public synchronized Message handleGameExecuteEvent(GameRequest gameRequest)
+    public Message handleGameExecuteEvent(GameRequest gameRequest)
     {
-        System.out.println("Received Game To execute!");
-        System.out.println(gameRequest.getGameName());
-        System.out.println(gameRequest.getPlayerDetails().getPlayerId());
-        System.out.println(((RPSPlay)(gameRequest.getPlayerDetails().getGamePlay())).getMove());
-
         Message response = null;
         PlayerDetails player = gameRequest.getPlayerDetails();
         String gameName = gameRequest.getGameName();
@@ -99,12 +99,13 @@ public class Dealer implements IDealer
         // Validate entry fee
         if (player.getEntryFee() < requestedGame.entryFee())
         {
+            System.out.println("Player paid: " + player.getEntryFee());
             response = new GameRejectResponse(player.getPlayerId());
             return response;
         }
 
         PriorityBlockingQueue<GameContext> gameQueue = liveGameCache.get(gameName);
-        final GameContext gameContext = gameQueue.poll();
+        final GameContext gameContext = gameQueue.peek();
 
         // The following three cases will result in a GameWaitResponse
         // 1. A new game context is created and a player cache is set up for it.
@@ -112,7 +113,6 @@ public class Dealer implements IDealer
         // 3. We still have less than the required number of players. This 
         //    is specially useful when there are more than two required 
         //    players.
-        System.out.println("Player: " + player.getPlayerId());
         if (gameContext == null ||
                 (gameContext.hasPlayer(player.getPlayerId())) ||
                 (gameContext.playerCount() < 
@@ -152,7 +152,6 @@ public class Dealer implements IDealer
         else
         {
             // Execute Game Match and return a CasinoGameCompleteResponse
-            System.out.println("About to execute!");
             Future<Response> gameResults = 
                     executor.submit(new Callable<Response>(){
 
@@ -182,16 +181,14 @@ public class Dealer implements IDealer
             }
         }
 
-        System.out.println("About to send response.");
         return response;
-
     }
 
     static class GameExecutorUtil
     {
         private static ConcurrentMap<UUID, Double> getPlayerResults(boolean matchTied, 
                 Map<String, List<PlayerDetails>> finalResults, Game game)
-                {
+        {
             ConcurrentMap<UUID, Double> playerResults = new ConcurrentHashMap<>();
             List<PlayerDetails> players = null;
             if (matchTied)
@@ -221,7 +218,7 @@ public class Dealer implements IDealer
             }
 
             return playerResults;
-                }
+        }
 
 
     }

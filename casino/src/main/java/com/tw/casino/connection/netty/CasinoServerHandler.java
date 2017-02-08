@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.tw.casino.ICasinoManager;
 import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.connection.messages.BaseGameResponse;
 import com.tw.casino.connection.messages.CasinoGameCompleteResponse;
@@ -31,12 +32,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
 {
-    private CasinoManager casinoManager;
+    private ICasinoManager casinoManager;
 
     private static final ConcurrentMap<UUID, Channel> DEALER_CHANNEL_CACHE = new ConcurrentHashMap<>();
     private static final ConcurrentMap<UUID, Channel> PLAYER_CHANNEL_CACHE = new ConcurrentHashMap<>();
 
-    public CasinoServerHandler(CasinoManager casinoManager)
+    public CasinoServerHandler(ICasinoManager casinoManager)
     {
         this.casinoManager = casinoManager;
     }
@@ -81,13 +82,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
             Channel dealerContext = DEALER_CHANNEL_CACHE.get(assignedDealer);
             
             // Forward to Dealer
-            ChannelFuture future = dealerContext.writeAndFlush(gameRequest);
-            future.addListener(new ChannelFutureListener(){
-
-                @Override
-                public void operationComplete(ChannelFuture arg0) throws Exception
-                {
-                }});
+            dealerContext.writeAndFlush(gameRequest);
         }
         else if (request instanceof BaseGameResponse)
         {
@@ -97,14 +92,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
             Channel playerChannel = PLAYER_CHANNEL_CACHE.get(playerId);
 
             // Forward to Player
-            ChannelFuture future = playerChannel.writeAndFlush(gameResponse);
-            future.addListener(new ChannelFutureListener(){
-
-                @Override
-                public void operationComplete(ChannelFuture arg0) throws Exception
-                {
-                    //playerContext.flush();
-                }});       
+            playerChannel.writeAndFlush(gameResponse);     
         }
         else if (request instanceof CasinoGameCompleteResponse)
         {
@@ -121,14 +109,7 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
                 Channel playerChannel = PLAYER_CHANNEL_CACHE.get(playerId);
                 
                 // Forward to Player
-                ChannelFuture future = playerChannel.writeAndFlush(response);
-                future.addListener(new ChannelFutureListener(){
-
-                    @Override
-                    public void operationComplete(ChannelFuture arg0) throws Exception
-                    {
-                        //playerContext.flush();
-                    }}); 
+                playerChannel.writeAndFlush(response);
             }              
         }
     }

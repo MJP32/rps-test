@@ -31,11 +31,29 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 public final class DealerClient
 {
     static final boolean SSL = System.getProperty("ssl") != null;
-    static final String HOST = System.getProperty("host", "127.0.0.1");
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8463"));
+    //static final String HOST = System.getProperty("host", "127.0.0.1");
+    //static final int PORT = Integer.parseInt(System.getProperty("port", "8463"));
 
+    public static void displayStartup()
+    {
+        System.out.println(CasinoConstants.STARTUP_DEALER);
+    }
+    
     public static void main(String[] args) throws Exception
     {
+        // Get start up args
+        String host = args[0];
+        int port = 0;
+        try
+        {
+            port = Integer.parseInt(args[1]);
+        }
+        catch (NumberFormatException e)
+        {
+            displayStartup();
+            System.exit(0);
+        }
+        
         final SslContext sslCtx;
         if (SSL)
         {
@@ -56,7 +74,7 @@ public final class DealerClient
             .handler(new LoggingHandler(LogLevel.INFO))
             .handler(new CasinoClientInitializer(sslCtx));
 
-            Channel channel = b.connect(HOST, PORT).sync().channel();
+            Channel channel = b.connect(host, port).sync().channel();
             CasinoClientHandler handler = channel.pipeline().get(CasinoClientHandler.class);
 
             // Operate here
@@ -71,7 +89,6 @@ public final class DealerClient
 
             while (true)
             {
-                System.out.println("Waiting for request...");
                 Message event = handler.awaitEvent();
                 if (event instanceof GameRequest)
                 {

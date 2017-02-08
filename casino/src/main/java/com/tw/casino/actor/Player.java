@@ -1,6 +1,8 @@
 package com.tw.casino.actor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,15 +14,20 @@ import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
+import com.tw.casino.connection.messages.Request;
+import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
+import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
 import com.tw.casino.util.CasinoConstants;
 
 public class Player implements IPlayer 
 {
+    private static final GameStrategy DEFAULT_STRATEGY = new RandomGuesingRPSStrategy();
+    
     private UUID playerId;
     private double accountBalance;
     private GameStrategy strategy;
@@ -29,7 +36,7 @@ public class Player implements IPlayer
     
     public Player(double startingBalance)
     {
-        this.setPlayerId(UUID.randomUUID());
+        this.playerId = UUID.randomUUID();
         this.accountBalance = startingBalance;
         this.strategy = null;
         this.availableGames = new HashMap<>();
@@ -41,6 +48,7 @@ public class Player implements IPlayer
         this.accountBalance = accountBalance;
     }
 
+    @Override
     public double getAccountBalance()
     {
         return accountBalance;
@@ -52,45 +60,56 @@ public class Player implements IPlayer
         this.strategy = strategy;  
     }
 
+    @Override
     public UUID getPlayerId()
     {
         return playerId;
     }
-
-    public void setPlayerId(UUID playerId)
+    
+    // For testing
+    public Map<String, GameDetails> getAvailableGames()
     {
-        this.playerId = playerId;
+        return availableGames;
     }
     
-    public GameListRequest createGameListRequest()
+    @Override
+    public Request createGameListRequest()
     {
         GameListRequest request = new GameListRequest(playerId);
         return request;
     }
     
-    public GameRequest createGameRequest(String name)
+    @Override
+    public Request createGameRequest(String name)
     {
         GameDetails details = availableGames.get(name);
         
-        if (accountBalance < details.getEntryFee())
+        if (accountBalance <= 0.0)
         {
             // Warn account balance has insufficient funds to request a game
+            System.out.println(CasinoConstants.PLAYER_INSUFFICIENT_FUNDS);
             return null;
         }
 
-        double entryFee = details.getEntryFee();
-        accountBalance = accountBalance - entryFee;
+        double expectedFee = details.getEntryFee();
+        double entryFeeToPay = (accountBalance >= expectedFee) ? expectedFee : accountBalance;
         
-        // TODO Add support to load strategy
-        GamePlay play = new RPSPlay(RPSMove.ROCK);
-        PlayerDetails profile = new PlayerDetails(playerId, entryFee, play);
+        // Update account balance
+        accountBalance -= entryFeeToPay;
+
+        GameStrategy strategy = this.strategy != null ? this.strategy : DEFAULT_STRATEGY;
+        GamePlay play = strategy.computeNextPlay(UUID.randomUUID());
+
+        PlayerDetails profile = new PlayerDetails(playerId, entryFeeToPay, play);
         GameRequest request = new GameRequest(profile, name);
         
         return request;
     }
     
-    public void handleGameListResponse(GameListResponse gameListResponse)
+    @Override
+    public String handleGameListResponse(Response response)
     {
+        GameListResponse gameListResponse = (GameListResponse) response;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(CasinoConstants.GAME_LIST_AVAILABLE);
         stringBuilder.append("\n");
@@ -106,38 +125,36 @@ public class Player implements IPlayer
             stringBuilder.append(name);
             stringBuilder.append("  Entry Fee: ");
             stringBuilder.append(details.getEntryFee());
-            stringBuilder.append("  Strategy: ");
-            String strategy = details.isAllowStrategy() ? CasinoConstants.ALLOW_STRATEGY
-                    : CasinoConstants.NO_STRATEGY;
-            stringBuilder.append(strategy);
             stringBuilder.append("\n");
         }
-        System.out.println(stringBuilder.toString());
+        
+        return stringBuilder.toString();
     }
     
-    public void handleGameResponse(Message gameResponse)
+    @Override
+    public String handleGameResponse(Response response)
     {
-        if (gameResponse instanceof GameWaitResponse)
+        StringBuilder stringBuilder = new StringBuilder();
+        if (response instanceof GameCompleteResponse)
         {
-            System.out.println(CasinoConstants.PLAYER_AWAIT);
-        }
-        else if (gameResponse instanceof GameCompleteResponse)
-        {
-            GameCompleteResponse response = (GameCompleteResponse) gameResponse;
-            if (response.getWinnings() > 0.0)
+            GameCompleteResponse gameCompleteResponse = (GameCompleteResponse) response;
+            if (gameCompleteResponse.getWinnings() > 0.0)
             {
-                accountBalance += response.getWinnings();
-                System.out.println("Congratulations! You win. $" + response.getWinnings());
+                accountBalance += gameCompleteResponse.getWinnings();
+                stringBuilder.append(CasinoConstants.PLAYER_CONGRATULATIONS);
+                stringBuilder.append(gameCompleteResponse.getWinnings());
             }
             else
             {
-                System.out.println("Sorry! You didn't win this time.");
+                stringBuilder.append(CasinoConstants.PLAYER_REGRET);
             }
         }
-        else if (gameResponse instanceof GameRejectResponse)
+        else if (response instanceof GameRejectResponse)
         {
-            System.out.println(CasinoConstants.PLAYER_REJECT);
+            stringBuilder.append(CasinoConstants.PLAYER_REJECT);
         }
+        
+        return stringBuilder.toString();
     }
 
 }

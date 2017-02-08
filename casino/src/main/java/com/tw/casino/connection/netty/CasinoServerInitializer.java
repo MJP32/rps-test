@@ -1,5 +1,6 @@
 package com.tw.casino.connection.netty;
 
+import com.tw.casino.ICasinoManager;
 import com.tw.casino.actor.CasinoManager;
 
 import io.netty.channel.ChannelInitializer;
@@ -13,9 +14,9 @@ import io.netty.handler.ssl.SslContext;
 public class CasinoServerInitializer extends ChannelInitializer<SocketChannel>
 {
     private final SslContext sslCtx;
-    private final CasinoManager casinoManager;
+    private final ICasinoManager casinoManager;
 
-    public CasinoServerInitializer(SslContext sslCtx, CasinoManager casinoManager)
+    public CasinoServerInitializer(SslContext sslCtx, ICasinoManager casinoManager)
     {
         this.sslCtx = sslCtx;
         this.casinoManager = casinoManager;

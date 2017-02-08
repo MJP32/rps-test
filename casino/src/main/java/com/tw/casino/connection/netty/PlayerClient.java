@@ -1,9 +1,14 @@
 package com.tw.casino.connection.netty;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
+import com.tw.casino.IPlayer;
 import com.tw.casino.actor.Player;
 import com.tw.casino.connection.messages.BaseGameResponse;
 import com.tw.casino.connection.messages.GameCompleteResponse;
@@ -13,7 +18,10 @@ import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
+import com.tw.casino.connection.messages.Response;
 import com.tw.casino.game.GameDetails;
+import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
+import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.CasinoConstants;
 
 import io.netty.bootstrap.Bootstrap;
@@ -76,9 +84,27 @@ public final class PlayerClient
         
         return startBalance;
     }
+    
+    public static void displayStartup()
+    {
+        System.out.println(CasinoConstants.STARTUP_PLAYER);
+    }
 
     public static void main(String[] args) throws Exception
-    {
+    {   
+        // Get start up args
+        String host = args[0];
+        int port = 0;
+        try
+        {
+            port = Integer.parseInt(args[1]);
+        }
+        catch (NumberFormatException e)
+        {
+            displayStartup();
+            System.exit(0);
+        }
+        
         final SslContext sslCtx;
         if (SSL)
         {
@@ -89,6 +115,7 @@ public final class PlayerClient
         {
             sslCtx = null;
         }
+        
 
         EventLoopGroup group = new NioEventLoopGroup();
         try
@@ -99,26 +126,33 @@ public final class PlayerClient
             .handler(new LoggingHandler(LogLevel.INFO))
             .handler(new CasinoClientInitializer(sslCtx));
 
-            Channel channel = b.connect(HOST, PORT).sync().channel();
+            Channel channel = b.connect(host, port).sync().channel();
             CasinoClientHandler handler = channel.pipeline().get(CasinoClientHandler.class);
 
             // Operate here
             Scanner scanner = new Scanner(System.in);
-            Player player;
+            IPlayer player;
             System.out.println(CasinoConstants.WELCOME);
             
             double startBalance = getStartBalance();
             player = new Player(startBalance);
+            
+            // Set Player Strategy
+            //player.setGameStrategy(new SharpRPSStrategy());
+            player.setGameStrategy(new RandomGuesingRPSStrategy());
 
             Message request = null;
             Message response = null;
+            
+            String menuMessage = null;
             
             // Get List of Games
             request = player.createGameListRequest();
             List<GameDetails> gameDetails = new ArrayList<GameDetails>();
             GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
             gameDetails.addAll(gameListResponse.getAvailableGames());
-            player.handleGameListResponse(gameListResponse);
+            menuMessage = player.handleGameListResponse(gameListResponse);
+            System.out.println(menuMessage);
             
             while (true)
             {
@@ -133,16 +167,16 @@ public final class PlayerClient
                     gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
                     gameDetails.clear();
                     gameDetails.addAll(gameListResponse.getAvailableGames());
-
-                    player.handleGameListResponse(gameListResponse);
+                    menuMessage = player.handleGameListResponse(gameListResponse);
+                    System.out.println(menuMessage);
                 }
                 else if (choice == 'v' || choice == 'V')
                 {
-                    System.out.println("Account Balance: " + player.getAccountBalance());
+                    System.out.println(CasinoConstants.PLAYER_BALANCE + player.getAccountBalance());
                 }
                 else if (choice == 'u' || choice == 'U')
                 {
-                    System.out.print("Enter the amount you wish to add as a decimal number: ");
+                    System.out.print(CasinoConstants.PLAYER_BALANCE_ADD);
                     input = scanner.next();
                     Double balance;
                     try
@@ -169,8 +203,16 @@ public final class PlayerClient
                         {
                             GameDetails details = gameDetails.get(gameIndex - 1);
                             request = player.createGameRequest(details.getName());
+                            if (request == null)
+                                continue;
                             response = handler.sendRequestAndGetResponse(request);
-                            player.handleGameResponse(response);                     
+                            if (response instanceof GameWaitResponse)
+                            {
+                                System.out.println(CasinoConstants.PLAYER_AWAIT);
+                                response = handler.awaitEvent();
+                            }
+                            menuMessage = player.handleGameResponse((Response) response);
+                            System.out.println(menuMessage);
                         }
                     }
                     catch (NumberFormatException e)

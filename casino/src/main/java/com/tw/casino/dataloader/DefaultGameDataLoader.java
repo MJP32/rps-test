@@ -24,8 +24,8 @@ public class DefaultGameDataLoader implements GameDataLoader
     @Override
     public void loadConfiguredGames()
     {
-        GameDetails gameDetails = new GameDetails(CasinoConstants.RPS, 5.0, true);
-        DealerGameDetails dealerGameDetails = new DealerGameDetails(CasinoConstants.RPS, 5.0, true, 2);
+        GameDetails gameDetails = new GameDetails(CasinoConstants.RPS, 5.0);
+        DealerGameDetails dealerGameDetails = new DealerGameDetails(CasinoConstants.RPS, 5.0, 2);
         
         this.dealerGameStore.add(dealerGameDetails);
         this.playerGameStore.add(gameDetails);    
