@@ -21,8 +21,7 @@ public class RockPaperScissorsTest
     @Test
     public void testMatchResults()
     {
-        RPSPlay onePlay = new RPSPlay(RPSMove.ROCK);
-        
+        RPSPlay onePlay = new RPSPlay(RPSMove.ROCK);       
         RPSPlay twoPlay = new RPSPlay(RPSMove.PAPER);
         
         PlayerDetails[] players = new PlayerDetails[2];
