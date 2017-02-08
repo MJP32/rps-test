@@ -127,11 +127,11 @@ public class Player implements IPlayer
             if (response.getWinnings() > 0.0)
             {
                 accountBalance += response.getWinnings();
-                // TODO Win
+                System.out.println("Congratulations! You win. $" + response.getWinnings());
             }
             else
             {
-                // TODO Did not win
+                System.out.println("Sorry! You didn't win this time.");
             }
         }
         else if (gameResponse instanceof GameRejectResponse)

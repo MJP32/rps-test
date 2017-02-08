@@ -6,7 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameDetails;
-import com.tw.casino.game.rps.RockPaperScissors;
+import com.tw.casino.game.rps.TwoPlayerRockPaperScissors;
 import com.tw.casino.util.CasinoConstants;
 
 public class DefaultGameDataLoader implements GameDataLoader

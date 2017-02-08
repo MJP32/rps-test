@@ -7,13 +7,15 @@ import java.util.UUID;
 
 import com.tw.casino.actor.PlayerDetails;
 
-public interface GameContext
+public interface GameContext extends Comparable<GameContext>
 {
     UUID getMatchId();
     
     long getTimestamp();
     
-    Set<PlayerDetails> getPlayerCache();
+    boolean hasPlayer(UUID playerId);
+    
+    int playerCount();
     
     /**
      * This method adds players to the player cache only once per match for

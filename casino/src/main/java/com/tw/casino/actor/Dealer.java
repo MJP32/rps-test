@@ -2,6 +2,7 @@ package com.tw.casino.actor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,14 @@ import com.tw.casino.game.Game;
 import com.tw.casino.game.GameContext;
 import com.tw.casino.game.rps.RPSGameContext;
 import com.tw.casino.game.rps.RPSPlay;
-import com.tw.casino.game.rps.RockPaperScissors;
+import com.tw.casino.game.rps.TwoPlayerRockPaperScissors;
 import com.tw.casino.util.CasinoConstants;
 
 
 public class Dealer implements IDealer 
 {
+    private static final int INITIAL_QUEUE_CAPACITY = 5;
+
     private final UUID dealerId;
 
     private final ConcurrentMap<String, Game> availableGames;
@@ -77,7 +80,7 @@ public class Dealer implements IDealer
     private Game createGame(double entryFee, boolean allowStrategy)
     {
         // TODO Use GameFactory here
-        return new RockPaperScissors(2, entryFee);
+        return new TwoPlayerRockPaperScissors(entryFee);
     }
 
     @Override
@@ -102,20 +105,20 @@ public class Dealer implements IDealer
 
         PriorityBlockingQueue<GameContext> gameQueue = liveGameCache.get(gameName);
         final GameContext gameContext = gameQueue.poll();
-        
+
         // The following three cases will result in a GameWaitResponse
         // 1. A new game context is created and a player cache is set up for it.
         // 2. If we have received a repeated request from a player.
         // 3. We still have less than the required number of players. This 
         //    is specially useful when there are more than two required 
         //    players.
+        System.out.println("Player: " + player.getPlayerId());
         if (gameContext == null ||
-                (gameContext.getPlayerCache().contains(player)) ||
-                (gameContext.getPlayerCache().size() < 
+                (gameContext.hasPlayer(player.getPlayerId())) ||
+                (gameContext.playerCount() < 
                         (requestedGame.requiredNumberOfPlayers() - 1)))
         {
             Future<UUID> queuedPlayer = executor.submit(new Callable<UUID>(){
-
                 @Override
                 public UUID call() throws Exception
                 {
@@ -124,16 +127,15 @@ public class Dealer implements IDealer
                     if (gameContext == null)
                     {
                         gameCtx = 
-                            new RPSGameContext((RockPaperScissors) availableGames.get(gameName));
+                                new RPSGameContext((TwoPlayerRockPaperScissors) availableGames.get(gameName));
                     }
                     else
                     {
                         gameCtx = gameContext;
-                    }
-                    
+                    }                  
                     gameCtx.setupMatch(player);
+                    gameQueue.offer(gameCtx);
 
-                    gameQueue.add(gameCtx);
                     return player.getPlayerId();
                 }});
 
@@ -150,74 +152,78 @@ public class Dealer implements IDealer
         else
         {
             // Execute Game Match and return a CasinoGameCompleteResponse
+            System.out.println("About to execute!");
             Future<Response> gameResults = 
                     executor.submit(new Callable<Response>(){
 
-                @Override
-                public Response call() throws Exception
-                {
-                    Map<String, List<PlayerDetails>> finalResults = gameContext.executeGame(player); 
-                    return getCasinoGameCompleteResponse(requestedGame, finalResults);
-                }});
+                        @Override
+                        public Response call() throws Exception
+                        {
+                            Map<String, List<PlayerDetails>> finalResults = gameContext.executeGame(player);
+
+                            boolean matchTied = finalResults.containsKey(CasinoConstants.TIE);
+                            double houseDeposit = matchTied ? requestedGame.payOut() : 0;
+                            Map<UUID, Double> playerResults = 
+                                    GameExecutorUtil.getPlayerResults(matchTied, finalResults, requestedGame);
+                            Response resp = new CasinoGameCompleteResponse(dealerId, houseDeposit, playerResults);
+
+                            gameQueue.remove(gameContext);
+                            return resp;
+                        }});
 
             try
             {
                 response = gameResults.get();
+                gameQueue.remove(gameContext);
             }
             catch (InterruptedException | ExecutionException e)
             {
                 e.printStackTrace();
             }
         }
-    
 
-    return response;
-            
-    }
-    
-    private synchronized Response getCasinoGameCompleteResponse(Game game, 
-            Map<String, List<PlayerDetails>> finalResults)
-    {
-        boolean matchTied = finalResults.containsKey(CasinoConstants.TIE);
-        double houseDeposit = matchTied ? game.payOut() : 0;
-        Map<UUID, Double> playerResults = 
-                getPlayerResults(matchTied, finalResults, game);
-        
-        return new CasinoGameCompleteResponse(dealerId, houseDeposit, playerResults);
+        System.out.println("About to send response.");
+        return response;
+
     }
 
-    private synchronized ConcurrentMap<UUID, Double> getPlayerResults(boolean matchTied, 
-            Map<String, List<PlayerDetails>> finalResults, Game game)
+    static class GameExecutorUtil
     {
-        ConcurrentMap<UUID, Double> playerResults = new ConcurrentHashMap<>();
-        List<PlayerDetails> players = null;
-        if (matchTied)
-        {
-            // Others
-            players = finalResults.get(CasinoConstants.OTHERS);
-            for (PlayerDetails player : players)
+        private static ConcurrentMap<UUID, Double> getPlayerResults(boolean matchTied, 
+                Map<String, List<PlayerDetails>> finalResults, Game game)
+                {
+            ConcurrentMap<UUID, Double> playerResults = new ConcurrentHashMap<>();
+            List<PlayerDetails> players = null;
+            if (matchTied)
             {
-                double playerReturn = player.getEntryFee() - game.entryFee();
-                playerResults.put(player.getPlayerId(), playerReturn);
+                // Others
+                players = finalResults.get(CasinoConstants.OTHERS);
+                for (PlayerDetails player : players)
+                {
+                    double playerReturn = player.getEntryFee() - game.entryFee();
+                    playerResults.put(player.getPlayerId(), playerReturn);
+                }
             }
-        }
-        else
-        {
-            // Winners
-            players = finalResults.get(CasinoConstants.WINNER);
-            for (PlayerDetails player : players)
-                playerResults.put(player.getPlayerId(), game.payOut());
-            
-            // Others
-            players = finalResults.get(CasinoConstants.OTHERS);
-            for (PlayerDetails player : players)
+            else
             {
-                double playerReturn = player.getEntryFee() - game.entryFee();
-                playerResults.put(player.getPlayerId(), playerReturn);
+                // Winners
+                players = finalResults.get(CasinoConstants.WINNER);
+                for (PlayerDetails player : players)
+                    playerResults.put(player.getPlayerId(), game.payOut());
+
+                // Others
+                players = finalResults.get(CasinoConstants.OTHERS);
+                for (PlayerDetails player : players)
+                {
+                    double playerReturn = player.getEntryFee() - game.entryFee();
+                    playerResults.put(player.getPlayerId(), playerReturn);
+                }
             }
-        }
-        
-        return playerResults;
+
+            return playerResults;
+                }
+
+
     }
 
 }

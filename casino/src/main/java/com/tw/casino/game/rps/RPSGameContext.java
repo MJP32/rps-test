@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentMap;
 
 import com.tw.casino.actor.PlayerDetails;
 import com.tw.casino.game.GameContext;
@@ -17,22 +19,22 @@ public final class RPSGameContext implements GameContext
 {
     private final UUID matchId;
     private final long timestamp;
-    private final Set<PlayerDetails> playerCache;
+    private final ConcurrentMap<UUID, PlayerDetails> playerCache;
 
-    private static ThreadLocal<RockPaperScissors> game 
-    = new ThreadLocal<RockPaperScissors>() 
+    private static ThreadLocal<TwoPlayerRockPaperScissors> game 
+    = new ThreadLocal<TwoPlayerRockPaperScissors>() 
     {
-        public RockPaperScissors initialValue()
+        public TwoPlayerRockPaperScissors initialValue()
         {
-            return new RockPaperScissors(2, 0.0);
+            return new TwoPlayerRockPaperScissors(0.0);
         }
     };
 
-    public RPSGameContext(RockPaperScissors rps)
+    public RPSGameContext(TwoPlayerRockPaperScissors rps)
     {
         this.matchId = UUID.randomUUID();
         this.timestamp = System.nanoTime();
-        this.playerCache = Collections.synchronizedSet(new LinkedHashSet<>());
+        this.playerCache = new ConcurrentHashMap<>();
         game.set(rps);
     }
 
@@ -49,29 +51,44 @@ public final class RPSGameContext implements GameContext
     }
 
     @Override
-    public Set<PlayerDetails> getPlayerCache()
+    public boolean hasPlayer(UUID playerId)
     {
-        return playerCache;
+        return playerCache.containsKey(playerId);
+    }
+    
+    @Override
+    public int playerCount()
+    {
+        return playerCache.size();
     }
 
     @Override
     public void setupMatch(PlayerDetails playerDetails)
     {
-        playerCache.add(playerDetails);
+        playerCache.putIfAbsent(playerDetails.getPlayerId(), playerDetails);
     }
 
     @Override
     public Map<String, List<PlayerDetails>> executeGame(PlayerDetails playerDetails)
     {
-        playerCache.add(playerDetails);
+        playerCache.put(playerDetails.getPlayerId(), playerDetails);
         
         PlayerDetails[] gamePlayerDetails = new PlayerDetails[playerCache.size()];
         
         int i = 0;
-        Iterator<PlayerDetails> iterator = playerCache.iterator();
+        Iterator<PlayerDetails> iterator = playerCache.values().iterator();
         while (iterator.hasNext())
             gamePlayerDetails[i++] = iterator.next();
         
-        return game.get().playMatch(gamePlayerDetails);
+        Map<String, List<PlayerDetails>> results = game.get().playMatch(gamePlayerDetails);
+        playerCache.clear();
+        
+        return results;
+    }
+
+    @Override
+    public int compareTo(GameContext o)
+    {
+        return Long.compare(timestamp, o.getTimestamp());
     }
 }
