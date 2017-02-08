@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.tw.casino.actor.PlayerDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 
 
 public interface Game

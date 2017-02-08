@@ -9,14 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.tw.casino.IPlayer;
-import com.tw.casino.actor.PlayerDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameId;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class TwoPlayerRockPaperScissors implements Game
 {   
-    private static final String NAME = CasinoConstants.RPS;
+    private static final String NAME = Constants.RPS;
     private static final int REQUIRED_PLAYERS = 2;
     
     private final GameId id;
@@ -114,21 +114,21 @@ public class TwoPlayerRockPaperScissors implements Game
         {
             playerDetails = new CopyOnWriteArrayList<>();
             playerDetails.add(winner);
-            results.put(CasinoConstants.WINNER, playerDetails);
+            results.put(Constants.WINNER, playerDetails);
             
             playerDetails = new CopyOnWriteArrayList<>();
             playerDetails.add(other);
-            results.put(CasinoConstants.OTHERS, playerDetails);
+            results.put(Constants.OTHERS, playerDetails);
         }
         else
         {
             playerDetails = new CopyOnWriteArrayList<>();
-            results.put(CasinoConstants.TIE, playerDetails);
+            results.put(Constants.TIE, playerDetails);
             
             playerDetails = new CopyOnWriteArrayList<>();
             playerDetails.add(players[0]);
             playerDetails.add(players[1]);
-            results.put(CasinoConstants.OTHERS, playerDetails);
+            results.put(Constants.OTHERS, playerDetails);
         }
         
         return results;

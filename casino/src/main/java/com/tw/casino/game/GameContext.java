@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.tw.casino.actor.PlayerDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 
 public interface GameContext extends Comparable<GameContext>
 {

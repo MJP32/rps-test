@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
 import com.tw.casino.game.Game;
 
 public class GameDataResponse extends Response implements Serializable

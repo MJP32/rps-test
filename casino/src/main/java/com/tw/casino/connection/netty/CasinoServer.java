@@ -3,7 +3,7 @@ package com.tw.casino.connection.netty;
 import com.tw.casino.ICasinoManager;
 import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.actor.CasinoManager;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -22,7 +22,7 @@ public final class CasinoServer
     
     public static void displayStartup()
     {
-        System.out.println(CasinoConstants.STARTUP_SERVER);
+        System.out.println(Constants.STARTUP_SERVER);
     }
     
     public static void main(String[] args) throws Exception

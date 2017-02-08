@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.tw.casino.game.GameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 
 public class GameListResponse extends Response implements Serializable
 {

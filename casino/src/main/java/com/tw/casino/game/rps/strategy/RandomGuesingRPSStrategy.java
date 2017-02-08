@@ -7,7 +7,7 @@ import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class RandomGuesingRPSStrategy implements GameStrategy
 {
@@ -21,7 +21,7 @@ public class RandomGuesingRPSStrategy implements GameStrategy
     @Override
     public String getName()
     {
-        return CasinoConstants.RANDOM_GUESSING;
+        return Constants.RANDOM_GUESSING;
     }
 
     @Override

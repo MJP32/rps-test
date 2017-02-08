@@ -16,13 +16,14 @@ import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
-import com.tw.casino.game.GameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class Player implements IPlayer 
 {
@@ -87,7 +88,7 @@ public class Player implements IPlayer
         if (accountBalance <= 0.0)
         {
             // Warn account balance has insufficient funds to request a game
-            System.out.println(CasinoConstants.PLAYER_INSUFFICIENT_FUNDS);
+            System.out.println(Constants.INSUFFICIENT_FUNDS);
             return null;
         }
 
@@ -111,7 +112,7 @@ public class Player implements IPlayer
     {
         GameListResponse gameListResponse = (GameListResponse) response;
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(CasinoConstants.GAME_LIST_AVAILABLE);
+        stringBuilder.append(Constants.GAME_LIST_AVAILABLE);
         stringBuilder.append("\n");
         int gameIndex = 1;
         for (GameDetails details : gameListResponse.getAvailableGames())
@@ -141,17 +142,17 @@ public class Player implements IPlayer
             if (gameCompleteResponse.getWinnings() > 0.0)
             {
                 accountBalance += gameCompleteResponse.getWinnings();
-                stringBuilder.append(CasinoConstants.PLAYER_CONGRATULATIONS);
+                stringBuilder.append(Constants.CONGRATULATIONS);
                 stringBuilder.append(gameCompleteResponse.getWinnings());
             }
             else
             {
-                stringBuilder.append(CasinoConstants.PLAYER_REGRET);
+                stringBuilder.append(Constants.REGRET);
             }
         }
         else if (response instanceof GameRejectResponse)
         {
-            stringBuilder.append(CasinoConstants.PLAYER_REJECT);
+            stringBuilder.append(Constants.REJECT);
         }
         
         return stringBuilder.toString();

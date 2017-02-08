@@ -25,13 +25,14 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameContext;
 import com.tw.casino.game.rps.RPSGameContext;
 import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.TwoPlayerRockPaperScissors;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 
 public class Dealer implements IDealer 
@@ -160,7 +161,7 @@ public class Dealer implements IDealer
                         {
                             Map<String, List<PlayerDetails>> finalResults = gameContext.executeGame(player);
 
-                            boolean matchTied = finalResults.containsKey(CasinoConstants.TIE);
+                            boolean matchTied = finalResults.containsKey(Constants.TIE);
                             double houseDeposit = matchTied ? requestedGame.payOut() : 0;
                             Map<UUID, Double> playerResults = 
                                     GameExecutorUtil.getPlayerResults(matchTied, finalResults, requestedGame);
@@ -194,7 +195,7 @@ public class Dealer implements IDealer
             if (matchTied)
             {
                 // Others
-                players = finalResults.get(CasinoConstants.OTHERS);
+                players = finalResults.get(Constants.OTHERS);
                 for (PlayerDetails player : players)
                 {
                     double playerReturn = player.getEntryFee() - game.entryFee();
@@ -204,12 +205,12 @@ public class Dealer implements IDealer
             else
             {
                 // Winners
-                players = finalResults.get(CasinoConstants.WINNER);
+                players = finalResults.get(Constants.WINNER);
                 for (PlayerDetails player : players)
                     playerResults.put(player.getPlayerId(), game.payOut());
 
                 // Others
-                players = finalResults.get(CasinoConstants.OTHERS);
+                players = finalResults.get(Constants.OTHERS);
                 for (PlayerDetails player : players)
                 {
                     double playerReturn = player.getEntryFee() - game.entryFee();

@@ -19,10 +19,10 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
-import com.tw.casino.game.GameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
 import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -66,19 +66,19 @@ public final class PlayerClient
         {
             try
             {
-                System.out.print(CasinoConstants.PLAYER_START);
+                System.out.print(Constants.START);
                 startBalance = Double.parseDouble(scanner.next());
                 if (startBalance >= 0.0)
                 {
                     break;
                 }
                 else
-                    System.out.println(CasinoConstants.PLAYER_RE_ENTER);
+                    System.out.println(Constants.RE_ENTER);
 
             }
             catch (NumberFormatException e)
             {
-                System.out.println(CasinoConstants.PLAYER_RE_ENTER);
+                System.out.println(Constants.RE_ENTER);
             }
         }
         
@@ -87,7 +87,7 @@ public final class PlayerClient
     
     public static void displayStartup()
     {
-        System.out.println(CasinoConstants.STARTUP_PLAYER);
+        System.out.println(Constants.STARTUP_PLAYER);
     }
 
     public static void main(String[] args) throws Exception
@@ -132,7 +132,7 @@ public final class PlayerClient
             // Operate here
             Scanner scanner = new Scanner(System.in);
             IPlayer player;
-            System.out.println(CasinoConstants.WELCOME);
+            System.out.println(Constants.WELCOME);
             
             double startBalance = getStartBalance();
             player = new Player(startBalance);
@@ -172,11 +172,11 @@ public final class PlayerClient
                 }
                 else if (choice == 'v' || choice == 'V')
                 {
-                    System.out.println(CasinoConstants.PLAYER_BALANCE + player.getAccountBalance());
+                    System.out.println(Constants.BALANCE + player.getAccountBalance());
                 }
                 else if (choice == 'u' || choice == 'U')
                 {
-                    System.out.print(CasinoConstants.PLAYER_BALANCE_ADD);
+                    System.out.print(Constants.BALANCE_ADD);
                     input = scanner.next();
                     Double balance;
                     try
@@ -187,7 +187,7 @@ public final class PlayerClient
                     }
                     catch (NumberFormatException e)
                     {
-                        System.out.println(CasinoConstants.PLAYER_REDO); 
+                        System.out.println(Constants.REDO); 
                     }
                 }
                 else if (Character.isDigit(choice))
@@ -197,7 +197,7 @@ public final class PlayerClient
                         int gameIndex = Integer.parseInt(input);
                         if (gameIndex > gameDetails.size() || gameIndex < 1)
                         {
-                            System.out.println(CasinoConstants.PLAYER_REDO);                           
+                            System.out.println(Constants.REDO);                           
                         }
                         else
                         {
@@ -208,7 +208,7 @@ public final class PlayerClient
                             response = handler.sendRequestAndGetResponse(request);
                             if (response instanceof GameWaitResponse)
                             {
-                                System.out.println(CasinoConstants.PLAYER_AWAIT);
+                                System.out.println(Constants.AWAIT);
                                 response = handler.awaitEvent();
                             }
                             menuMessage = player.handleGameResponse((Response) response);
@@ -217,7 +217,7 @@ public final class PlayerClient
                     }
                     catch (NumberFormatException e)
                     {
-                        System.out.println(CasinoConstants.PLAYER_REDO);
+                        System.out.println(Constants.REDO);
                     }
 
                 }
@@ -226,7 +226,7 @@ public final class PlayerClient
                     break;
                 }
                 else
-                    System.out.println(CasinoConstants.PLAYER_REDO);
+                    System.out.println(Constants.REDO);
             }
 
             scanner.close();

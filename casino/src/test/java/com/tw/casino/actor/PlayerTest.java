@@ -11,17 +11,18 @@ import com.tw.casino.connection.messages.GameCompleteResponse;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.Message;
-import com.tw.casino.game.GameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class PlayerTest
 {
     private Player player = new Player(50);
     private static final List<GameDetails> gameList = new ArrayList<GameDetails>();
-    public static GameDetails gameDetails = new GameDetails(CasinoConstants.RPS, 5);
+    public static GameDetails gameDetails = new GameDetails(Constants.RPS, 5);
     
     static
     {
@@ -37,7 +38,7 @@ public class PlayerTest
         player.setGameStrategy(new SharpRPSStrategy());
         player.handleGameListResponse(new GameListResponse(player.getPlayerId(), gameList));
         
-        Message request = player.createGameRequest(CasinoConstants.RPS);
+        Message request = player.createGameRequest(Constants.RPS);
         assertTrue(request instanceof GameRequest);
         
         GameRequest gameRequest = (GameRequest) request;

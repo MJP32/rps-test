@@ -20,9 +20,9 @@ import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameDetails;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

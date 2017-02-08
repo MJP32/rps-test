@@ -2,7 +2,7 @@ package com.tw.casino.connection.messages;
 
 import java.io.Serializable;
 
-import com.tw.casino.actor.PlayerDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 
 public class GameRequest extends Request implements Serializable
 {

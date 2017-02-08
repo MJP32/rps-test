@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentMap;
 
-import com.tw.casino.actor.PlayerDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.GameContext;
 
 public final class RPSGameContext implements GameContext

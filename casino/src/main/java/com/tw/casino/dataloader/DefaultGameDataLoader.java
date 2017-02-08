@@ -3,11 +3,11 @@ package com.tw.casino.dataloader;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameDetails;
 import com.tw.casino.game.rps.TwoPlayerRockPaperScissors;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class DefaultGameDataLoader implements GameDataLoader
 {
@@ -24,8 +24,8 @@ public class DefaultGameDataLoader implements GameDataLoader
     @Override
     public void loadConfiguredGames()
     {
-        GameDetails gameDetails = new GameDetails(CasinoConstants.RPS, 5.0);
-        DealerGameDetails dealerGameDetails = new DealerGameDetails(CasinoConstants.RPS, 5.0, 2);
+        GameDetails gameDetails = new GameDetails(Constants.RPS, 5.0);
+        DealerGameDetails dealerGameDetails = new DealerGameDetails(Constants.RPS, 5.0, 2);
         
         this.dealerGameStore.add(dealerGameDetails);
         this.playerGameStore.add(gameDetails);    

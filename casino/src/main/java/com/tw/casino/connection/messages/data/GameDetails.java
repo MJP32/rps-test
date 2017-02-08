@@ -1,4 +1,4 @@
-package com.tw.casino.game;
+package com.tw.casino.connection.messages.data;
 
 import java.io.Serializable;
 

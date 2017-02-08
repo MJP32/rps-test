@@ -9,16 +9,16 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.tw.casino.ICasinoManager;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.dataloader.DefaultGameDataLoader;
 import com.tw.casino.dataloader.GameDataLoader;
-import com.tw.casino.game.DealerGameDetails;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameDetails;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class CasinoManager implements ICasinoManager
 {
-    private static final String DEFAULT_GAME = CasinoConstants.RPS;
+    private static final String DEFAULT_GAME = Constants.RPS;
     private static final double DEFAULT_INITIAL_HOUSE_BALANCE = 0;
     
     private double houseAccountBalance;

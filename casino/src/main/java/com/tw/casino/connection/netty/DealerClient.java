@@ -13,9 +13,9 @@ import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.TerminateEvent;
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
 import com.tw.casino.game.Game;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -36,7 +36,7 @@ public final class DealerClient
 
     public static void displayStartup()
     {
-        System.out.println(CasinoConstants.STARTUP_DEALER);
+        System.out.println(Constants.STARTUP_DEALER);
     }
     
     public static void main(String[] args) throws Exception
@@ -80,12 +80,12 @@ public final class DealerClient
             // Operate here
             IDealer dealer = new Dealer();
 
-            System.out.println(CasinoConstants.WELCOME);
+            System.out.println(Constants.WELCOME);
             GameDataRequest request = new GameDataRequest(dealer.getDealerId());
             GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
             dealer.handleGameDataResponse(response);
 
-            System.out.println(CasinoConstants.DEALER_READY);
+            System.out.println(Constants.DEALER_READY);
 
             while (true)
             {

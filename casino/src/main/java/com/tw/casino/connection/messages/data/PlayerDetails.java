@@ -1,4 +1,4 @@
-package com.tw.casino.actor;
+package com.tw.casino.connection.messages.data;
 
 import java.io.Serializable;
 import java.util.UUID;

@@ -2,9 +2,9 @@ package com.tw.casino.dataloader;
 
 import java.util.List;
 
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.game.Game;
-import com.tw.casino.game.GameDetails;
 
 public interface GameDataLoader
 {

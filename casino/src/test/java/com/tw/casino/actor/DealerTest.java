@@ -15,10 +15,11 @@ import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
-import com.tw.casino.game.DealerGameDetails;
+import com.tw.casino.connection.messages.data.DealerGameDetails;
+import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
-import com.tw.casino.util.CasinoConstants;
+import com.tw.casino.util.Constants;
 
 public class DealerTest
 {
@@ -26,7 +27,7 @@ public class DealerTest
     private static List<DealerGameDetails> gameDetails = new ArrayList<DealerGameDetails>();
     static
     {
-        gameDetails.add(new DealerGameDetails(CasinoConstants.RPS, 5.0, 2));
+        gameDetails.add(new DealerGameDetails(Constants.RPS, 5.0, 2));
     }
     private GameDataResponse gameDataResponse;
     private GameRequest gameRequest;
@@ -52,12 +53,12 @@ public class DealerTest
         playerOne = new PlayerDetails(UUID.randomUUID(), 5.0, new RPSPlay(RPSMove.ROCK));
         
         Message response = null;
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerOne, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof GameWaitResponse);
         assertEquals(playerOne.getPlayerId(), ((GameWaitResponse) response).getPlayerId());
         
-        assertEquals(1, dealer.getLiveGameCache().get(CasinoConstants.RPS).size());
+        assertEquals(1, dealer.getLiveGameCache().get(Constants.RPS).size());
     }
 
     @Test
@@ -70,11 +71,11 @@ public class DealerTest
         playerTwo = new PlayerDetails(UUID.randomUUID(), 5.0, new RPSPlay(RPSMove.ROCK));
         
         Message response = null;
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerOne, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof GameWaitResponse);
         
-        gameRequest = new GameRequest(playerTwo, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerTwo, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof CasinoGameCompleteResponse);
     }
@@ -88,11 +89,11 @@ public class DealerTest
         playerOne = new PlayerDetails(UUID.randomUUID(), 5.0, new RPSPlay(RPSMove.ROCK));
         
         Message response = null;
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerOne, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof GameWaitResponse);
         
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerOne, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof GameWaitResponse);
         
@@ -107,7 +108,7 @@ public class DealerTest
         playerOne = new PlayerDetails(UUID.randomUUID(), 2.0, new RPSPlay(RPSMove.ROCK));
         
         Message response = null;
-        gameRequest = new GameRequest(playerOne, CasinoConstants.RPS);
+        gameRequest = new GameRequest(playerOne, Constants.RPS);
         response = dealer.handleGameExecuteEvent(gameRequest);
         assertTrue(response instanceof GameRejectResponse);
         
