@@ -76,4 +76,4 @@ Once you have instantiated as server, you can instantiate any number of Dealers 
 * Related dependencies: Guava, Slf4j-API, Javassist.
 
 ### For questions, comments or concerns ###
-* **Contact**: Siddhartha Sengupta (siddharths1787@gmail.com)
+* **Contact**: Siddhartha Sengupta
