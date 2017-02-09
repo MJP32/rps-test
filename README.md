@@ -26,6 +26,7 @@ Interaction between these actors is driven by *messages* as described below.
 * *GameCompleteResponse*: This message is sent per player with their corresponding winnings.
 
 The following messages are simply forwarded to the Player.
+
 * *GameWaitResponse*: The is sent by the Dealer when more Players need to join for a game.
 * *GameRejectResponse*: When a Player submits a fee less than the Game's entry fee.
 
