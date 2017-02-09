@@ -12,7 +12,7 @@
 ## Running the Casino ##
 
 To play at the casino follow these steps.
-### Step 3: (Required) Build the project ###
+### Step 1: (Required) Install Dependencies ###
 * Unzip the dependencies directory.
 * Follow the instructions in the included *dependencies_readme.txt* to install the jars required to build the project.
 
