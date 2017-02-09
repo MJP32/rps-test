@@ -3,15 +3,10 @@ package com.tw.casino.game.rps;
 import java.io.Serializable;
 import java.util.UUID;
 
-import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.GamePlay;
 
 public class RPSPlay implements GamePlay, Serializable
 {
-    
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1124697691657816925L;
 
     private volatile int hashCode = 0;

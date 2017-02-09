@@ -1,20 +1,10 @@
 package com.tw.casino.connection.netty;
 
-import java.util.List;
-import java.util.Scanner;
-
 import com.tw.casino.IDealer;
 import com.tw.casino.actor.Dealer;
-import com.tw.casino.actor.Player;
-import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
-import com.tw.casino.connection.messages.GameListRequest;
-import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.Message;
-import com.tw.casino.connection.messages.TerminateEvent;
-import com.tw.casino.connection.messages.data.DealerGameDetails;
-import com.tw.casino.game.Game;
 import com.tw.casino.util.Constants;
 
 import io.netty.bootstrap.Bootstrap;
@@ -31,8 +21,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 public final class DealerClient
 {
     static final boolean SSL = System.getProperty("ssl") != null;
-    //static final String HOST = System.getProperty("host", "127.0.0.1");
-    //static final int PORT = Integer.parseInt(System.getProperty("port", "8463"));
 
     public static void displayStartup()
     {
@@ -66,6 +54,7 @@ public final class DealerClient
         }
 
         EventLoopGroup group = new NioEventLoopGroup();
+        Channel channel = null;
         try
         {
             Bootstrap b = new Bootstrap();
@@ -74,16 +63,17 @@ public final class DealerClient
             .handler(new LoggingHandler(LogLevel.INFO))
             .handler(new CasinoClientInitializer(sslCtx));
 
-            Channel channel = b.connect(host, port).sync().channel();
+            channel = b.connect(host, port).sync().channel();
             CasinoClientHandler handler = channel.pipeline().get(CasinoClientHandler.class);
 
             // Operate here
             IDealer dealer = new Dealer();
 
             System.out.println(Constants.WELCOME);
-            GameDataRequest request = new GameDataRequest(dealer.getDealerId());
-            GameDataResponse response = (GameDataResponse) handler.sendRequestAndGetResponse(request);
-            dealer.handleGameDataResponse(response);
+            
+            Message request = dealer.createGameDataRequest();;
+            Message response = handler.sendRequestAndGetResponse(request);
+            dealer.handleGameDataResponse((GameDataResponse) response);
 
             System.out.println(Constants.DEALER_READY);
 
@@ -96,16 +86,12 @@ public final class DealerClient
                             dealer.handleGameExecuteEvent((GameRequest) event);
                     handler.sendEvent(gameExecutedEvent);
                 }
-                else if (event instanceof TerminateEvent)
-                {
-                    break;
-                }
             }
 
-            channel.close();
         }
         finally
         {
+            channel.close();
             group.shutdownGracefully();
         }
     }

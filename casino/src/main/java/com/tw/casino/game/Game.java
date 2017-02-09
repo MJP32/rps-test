@@ -1,12 +1,15 @@
 package com.tw.casino.game;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import com.tw.casino.connection.messages.data.PlayerDetails;
 
-
+/**
+ * Defines a interface for Games in the Casino.
+ * @author siddharths1787
+ *
+ */
 public interface Game
 {
     /**

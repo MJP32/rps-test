@@ -2,9 +2,7 @@ package com.tw.casino.actor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -18,17 +16,12 @@ import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
-import com.tw.casino.connection.messages.GameWaitResponse;
-import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.GamePlay;
 import com.tw.casino.game.GameStrategy;
-import com.tw.casino.game.rps.RPSMove;
-import com.tw.casino.game.rps.RPSPlay;
-import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
 import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.Constants;
 import com.tw.casino.util.EmployStrategy;
@@ -105,6 +98,7 @@ public class Player implements IPlayer
                 {
                     e.printStackTrace();
                 }
+                break;
             }
         }
 

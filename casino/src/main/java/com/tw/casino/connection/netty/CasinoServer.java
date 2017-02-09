@@ -2,7 +2,6 @@ package com.tw.casino.connection.netty;
 
 import com.tw.casino.ICasinoManager;
 import com.tw.casino.actor.CasinoManager;
-import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.util.Constants;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -18,7 +17,6 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 public final class CasinoServer
 {
     static final boolean SSL = System.getProperty("ssl") != null;
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8463"));
     
     public static void displayStartup()
     {
@@ -63,7 +61,7 @@ public final class CasinoServer
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel.class)
-            .handler(new LoggingHandler(LogLevel.INFO))
+            .handler(new LoggingHandler(LogLevel.WARN))
             .childHandler(new CasinoServerInitializer(sslCtx, casinoManager));
             
             b.bind(port).sync().channel().closeFuture().sync();

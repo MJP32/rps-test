@@ -4,18 +4,10 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import com.tw.casino.game.GamePlay;
-import com.tw.casino.game.rps.RPSMove;
 
 public class PlayerDetails implements Serializable
 {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 4754908319114689558L;
-
-    /**
-     * 
-     */
     
     private volatile int hashCode = 0;
     

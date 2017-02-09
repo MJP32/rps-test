@@ -1,32 +1,20 @@
 package com.tw.casino.connection.netty;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.tw.casino.ICasinoManager;
-import com.tw.casino.actor.CasinoManager;
 import com.tw.casino.connection.messages.BaseGameResponse;
 import com.tw.casino.connection.messages.CasinoGameCompleteResponse;
 import com.tw.casino.connection.messages.GameCompleteResponse;
 import com.tw.casino.connection.messages.GameDataRequest;
-import com.tw.casino.connection.messages.GameDataResponse;
 import com.tw.casino.connection.messages.GameListRequest;
-import com.tw.casino.connection.messages.GameListResponse;
-import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
-import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
-import com.tw.casino.connection.messages.data.DealerGameDetails;
-import com.tw.casino.connection.messages.data.GameDetails;
-import com.tw.casino.game.Game;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -50,28 +38,21 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
         if (request instanceof GameListRequest)
         {
             GameListRequest gameListRequest = (GameListRequest) request;
-            List<GameDetails> gameDetailsList = casinoManager.getGameDetailsList();
 
-            // Store the ChannelHandlerContext for player
+            // Store the Channel for Player
             PLAYER_CHANNEL_CACHE.putIfAbsent(gameListRequest.getPlayerId(), ctx.channel());
 
-            response = new 
-                    GameListResponse(gameListRequest.getPlayerId(), gameDetailsList);
-
+            response = casinoManager.handleGameListRequest(gameListRequest);
             ctx.write(response);
         }
         else if (request instanceof GameDataRequest)
         {
             GameDataRequest gameDataRequest = (GameDataRequest) request;
-
-            casinoManager.registerDealer(gameDataRequest.getDealerId());
-
-            // Store the ChannelHandlerContext for dealer
+            
+            // Store the Channel for Dealer
             DEALER_CHANNEL_CACHE.putIfAbsent(gameDataRequest.getDealerId(), ctx.channel());
 
-            List<DealerGameDetails> gameData = casinoManager.getGameData();
-            response = new GameDataResponse(gameDataRequest.getDealerId(), gameData);
-
+            response = casinoManager.handleGameDataRequest(gameDataRequest);
             ctx.write(response);
         }
         else if (request instanceof GameRequest)
@@ -96,21 +77,18 @@ public class CasinoServerHandler extends SimpleChannelInboundHandler<Message>
         }
         else if (request instanceof CasinoGameCompleteResponse)
         {
-            CasinoGameCompleteResponse gameComplete = (CasinoGameCompleteResponse) request;
-
-            if (gameComplete.getHouseDeposit() > 0)
-                casinoManager.updateHouseAccountBalance(gameComplete.getHouseDeposit());
-
-            for (Entry<UUID, Double> playerResults : gameComplete.getPlayerResults().entrySet())
+            CasinoGameCompleteResponse gameComplete = (CasinoGameCompleteResponse) request;     
+            
+            List<GameCompleteResponse> playerResponses = 
+                    casinoManager.handleGameCompleteResponse(gameComplete);
+            
+            // Forward to Player
+            for (GameCompleteResponse rsp : playerResponses)
             {
-                UUID playerId = playerResults.getKey();
-                double playerReturn = playerResults.getValue();
-                response = new GameCompleteResponse(playerId, playerReturn);
-                Channel playerChannel = PLAYER_CHANNEL_CACHE.get(playerId);
-                
-                // Forward to Player
-                playerChannel.writeAndFlush(response);
-            }              
+                Channel playerChannel = PLAYER_CHANNEL_CACHE.get(rsp.getPlayerId());
+
+                playerChannel.writeAndFlush(rsp);
+            }
         }
     }
 

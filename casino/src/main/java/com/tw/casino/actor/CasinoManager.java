@@ -3,17 +3,25 @@ package com.tw.casino.actor;
 import java.util.Deque;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.tw.casino.ICasinoManager;
+import com.tw.casino.connection.messages.CasinoGameCompleteResponse;
+import com.tw.casino.connection.messages.GameCompleteResponse;
+import com.tw.casino.connection.messages.GameDataRequest;
+import com.tw.casino.connection.messages.GameDataResponse;
+import com.tw.casino.connection.messages.GameListRequest;
+import com.tw.casino.connection.messages.GameListResponse;
+import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.data.DealerGameDetails;
 import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.dataloader.DefaultGameDataLoader;
 import com.tw.casino.dataloader.GameDataLoader;
-import com.tw.casino.game.Game;
 import com.tw.casino.util.Constants;
 
 public class CasinoManager implements ICasinoManager
@@ -21,7 +29,7 @@ public class CasinoManager implements ICasinoManager
     private static final String DEFAULT_GAME = Constants.RPS;
     private static final double DEFAULT_INITIAL_HOUSE_BALANCE = 0;
     
-    private double houseAccountBalance;
+    private volatile AtomicDouble houseAccountBalance;
     private GameDataLoader gameDataLoader;
     private CopyOnWriteArrayList<UUID> dealerRegistry;
     private ConcurrentMap<String, Deque<UUID>> gameDealerCache;
@@ -29,7 +37,7 @@ public class CasinoManager implements ICasinoManager
     public CasinoManager()
     {
         
-        this.houseAccountBalance = DEFAULT_INITIAL_HOUSE_BALANCE;
+        this.houseAccountBalance = new AtomicDouble(DEFAULT_INITIAL_HOUSE_BALANCE);
         this.gameDataLoader = new DefaultGameDataLoader();
         this.dealerRegistry = new CopyOnWriteArrayList<>();
         this.gameDealerCache = new ConcurrentHashMap<>();
@@ -47,23 +55,21 @@ public class CasinoManager implements ICasinoManager
     
     public double getHouseAccountBalance()
     {
-        return houseAccountBalance;
+        return houseAccountBalance.get();
     }
 
     @Override
     public void updateHouseAccountBalance(double houseDeposit)
     {
-        this.houseAccountBalance += houseDeposit;
+        houseAccountBalance.getAndAdd(houseDeposit);
     }
 
-    @Override
-    public List<GameDetails> getGameDetailsList()
+    private List<GameDetails> getGameDetailsList()
     {
         return gameDataLoader.availableGames();
     }
     
-    @Override
-    public List<DealerGameDetails> getGameData()
+    private List<DealerGameDetails> getGameData()
     {
         return gameDataLoader.getGames();
     }
@@ -85,7 +91,8 @@ public class CasinoManager implements ICasinoManager
     }
     
     /**
-     * Uses a LIFO policy to retrieve the most recently registered dealer.
+     * Uses a LIFO policy to retrieve the most recently registered 
+     * dealer.
      * @param name
      * @return
      */
@@ -93,6 +100,40 @@ public class CasinoManager implements ICasinoManager
     public UUID assignDealerForGame(String name)
     {
         return gameDealerCache.get(name).getFirst();
+    }
+
+    @Override
+    public Message handleGameListRequest(GameListRequest gameListRequest)
+    {
+        List<GameDetails> gameDetailsList = getGameDetailsList();
+        return new GameListResponse(gameListRequest.getPlayerId(), gameDetailsList);
+    }
+
+    @Override
+    public Message handleGameDataRequest(GameDataRequest gameDataRequest)
+    {
+        registerDealer(gameDataRequest.getDealerId());
+        List<DealerGameDetails> gameData = getGameData();
+        return new GameDataResponse(gameDataRequest.getDealerId(), gameData);
+    }
+
+    @Override
+    public List<GameCompleteResponse> handleGameCompleteResponse(
+            CasinoGameCompleteResponse gameCompleteResponse)
+    {
+        if (gameCompleteResponse.getHouseDeposit() > 0)
+            updateHouseAccountBalance(gameCompleteResponse.getHouseDeposit());
+ 
+        List<GameCompleteResponse> playerResponses = new CopyOnWriteArrayList<>();
+        for (Entry<UUID, Double> playerResults : 
+            gameCompleteResponse.getPlayerResults().entrySet())
+        {
+            playerResponses.add(
+                    new GameCompleteResponse(playerResults.getKey(), 
+                            playerResults.getValue()));
+        }     
+        
+        return playerResponses;
     }
 
 }

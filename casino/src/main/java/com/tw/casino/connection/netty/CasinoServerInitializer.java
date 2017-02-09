@@ -1,7 +1,6 @@
 package com.tw.casino.connection.netty;
 
 import com.tw.casino.ICasinoManager;
-import com.tw.casino.actor.CasinoManager;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

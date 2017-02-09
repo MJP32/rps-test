@@ -2,18 +2,12 @@ package com.tw.casino.connection.messages;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.tw.casino.connection.messages.data.DealerGameDetails;
-import com.tw.casino.game.Game;
 
 public class GameDataResponse extends Response implements Serializable
 {
-    
-    /**
-     * 
-     */
     private static final long serialVersionUID = 2832907221729261051L;
     private final UUID dealerId;
     private final List<DealerGameDetails> gameData;

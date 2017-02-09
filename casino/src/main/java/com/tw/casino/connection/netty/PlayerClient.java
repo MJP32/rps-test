@@ -1,36 +1,17 @@
 package com.tw.casino.connection.netty;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
-import java.util.Set;
-
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 
 import com.tw.casino.IPlayer;
 import com.tw.casino.actor.Player;
-import com.tw.casino.connection.messages.BaseGameResponse;
-import com.tw.casino.connection.messages.GameCompleteResponse;
-import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
-import com.tw.casino.connection.messages.GameRejectResponse;
-import com.tw.casino.connection.messages.GameRequest;
 import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.connection.messages.data.GameDetails;
-import com.tw.casino.game.GameStrategy;
-import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
-import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.Constants;
-import com.tw.casino.util.EmployStrategy;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

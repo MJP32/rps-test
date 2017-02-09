@@ -1,15 +1,10 @@
 package com.tw.casino.actor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +14,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import com.tw.casino.IDealer;
 import com.tw.casino.connection.messages.CasinoGameCompleteResponse;
+import com.tw.casino.connection.messages.GameDataRequest;
 import com.tw.casino.connection.messages.GameDataResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
@@ -30,9 +26,9 @@ import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameContext;
 import com.tw.casino.game.rps.RPSGameContext;
-import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.TwoPlayerRockPaperScissors;
 import com.tw.casino.util.Constants;
+import com.tw.casino.util.VisibleForTest;
 
 
 public class Dealer implements IDealer 
@@ -57,14 +53,13 @@ public class Dealer implements IDealer
         return dealerId;
     }
 
-    // For Test
+    @VisibleForTest
     public Map<String, Game> getAvailableGames()
     {
         return availableGames;
     }
-    
 
-    // For Test
+    @VisibleForTest
     public ConcurrentMap<String, PriorityBlockingQueue<GameContext>> getLiveGameCache()
     {
         return liveGameCache;
@@ -77,16 +72,23 @@ public class Dealer implements IDealer
         {
             for (DealerGameDetails gameData : gameDataResponse.getGameData())
             {
-                availableGames.put(gameData.getName(), createGame(gameData.getEntryFee()));
-                liveGameCache.put(gameData.getName(), new PriorityBlockingQueue<GameContext>());
+                String name = gameData.getName();
+                availableGames.put(name, createGame(name, gameData.getEntryFee()));
+                liveGameCache.put(name, new PriorityBlockingQueue<GameContext>());
             }
         }
     }
 
-    private Game createGame(double entryFee)
+    @Override
+    public Game createGame(String name, double entryFee)
     {
-        // TODO Use GameFactory here
         return new TwoPlayerRockPaperScissors(entryFee);
+    }
+    
+    @Override
+    public Message createGameDataRequest()
+    {
+        return new GameDataRequest(dealerId);
     }
 
     @Override

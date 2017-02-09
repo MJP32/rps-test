@@ -1,14 +1,11 @@
 package com.tw.casino.game.rps;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.tw.casino.IPlayer;
 import com.tw.casino.connection.messages.data.PlayerDetails;
 import com.tw.casino.game.Game;
 import com.tw.casino.game.GameId;
