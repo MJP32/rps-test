@@ -9,13 +9,16 @@ import org.junit.Test;
 
 import com.tw.casino.connection.messages.GameCompleteResponse;
 import com.tw.casino.connection.messages.GameListResponse;
+import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
+import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.connection.messages.data.PlayerDetails;
+import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
-import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
+import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
 import com.tw.casino.util.Constants;
 
 public class PlayerTest
@@ -30,12 +33,13 @@ public class PlayerTest
     }
     
     public GameListResponse gameListResponse;
+    public GameWaitResponse gameWaitResponse;
+    public GameRejectResponse gameRejectResponse;
     public GameCompleteResponse gameCompleteResponse;
     
     @Test
     public void testCreateGameRequest()
     {
-        player.setGameStrategy(new SharpRPSStrategy());
         player.handleGameListResponse(new GameListResponse(player.getPlayerId(), gameList));
         
         Message request = player.createGameRequest(Constants.RPS);
@@ -55,5 +59,32 @@ public class PlayerTest
         player.handleGameResponse(gameCompleteResponse);
         
         assertEquals(0, Double.compare(60, player.getAccountBalance()));
+    }
+    
+    @Test
+    public void testGameWaitResponse()
+    {
+        gameWaitResponse = new GameWaitResponse(player.getPlayerId());
+        String message = player.handleGameResponse(gameWaitResponse);
+        
+        assertEquals(Constants.AWAIT, message);
+    }
+    
+    @Test
+    public void testGameRejectResponse()
+    {
+        gameRejectResponse = new GameRejectResponse(player.getPlayerId());
+        String message = player.handleGameResponse(gameRejectResponse);
+        
+        assertEquals(Constants.REJECT, message);
+    }
+    
+    @Test
+    public void testPlayerUsesAnnotatedStrategy()
+    {
+        player.loadPlayerStrategy();
+        GameStrategy strategy = player.getGameStrategy();
+        
+        assertTrue(strategy instanceof RandomGuesingRPSStrategy);
     }
 }

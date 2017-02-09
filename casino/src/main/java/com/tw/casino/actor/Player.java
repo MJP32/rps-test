@@ -16,6 +16,7 @@ import com.tw.casino.connection.messages.GameListRequest;
 import com.tw.casino.connection.messages.GameListResponse;
 import com.tw.casino.connection.messages.GameRejectResponse;
 import com.tw.casino.connection.messages.GameRequest;
+import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Request;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.connection.messages.data.GameDetails;
@@ -25,6 +26,7 @@ import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.Constants;
 import com.tw.casino.util.EmployStrategy;
+import com.tw.casino.util.VisibleForTest;
 
 public class Player implements IPlayer 
 {
@@ -61,6 +63,12 @@ public class Player implements IPlayer
     {
         this.strategy = strategy;  
     }
+    
+    @VisibleForTest
+    public GameStrategy getGameStrategy()
+    {
+        return strategy;  
+    }
 
     @Override
     public UUID getPlayerId()
@@ -68,12 +76,13 @@ public class Player implements IPlayer
         return playerId;
     }
     
-    // For testing
+    @VisibleForTest
     public Map<String, GameDetails> getAvailableGames()
     {
         return availableGames;
     }
     
+    @Override
     public void loadPlayerStrategy()
     {
         Reflections reflections = new Reflections(Constants.GAME_LOCATION, new SubTypesScanner());
@@ -167,6 +176,11 @@ public class Player implements IPlayer
     public String handleGameResponse(Response response)
     {
         StringBuilder stringBuilder = new StringBuilder();
+        if (response instanceof GameWaitResponse)
+        {
+            return Constants.AWAIT;
+        }
+        
         if (response instanceof GameCompleteResponse)
         {
             GameCompleteResponse gameCompleteResponse = (GameCompleteResponse) response;

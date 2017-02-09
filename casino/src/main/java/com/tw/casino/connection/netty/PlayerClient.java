@@ -7,7 +7,6 @@ import java.util.Scanner;
 import com.tw.casino.IPlayer;
 import com.tw.casino.actor.Player;
 import com.tw.casino.connection.messages.GameListResponse;
-import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.connection.messages.data.GameDetails;
@@ -195,13 +194,14 @@ public final class PlayerClient
                             if (request == null)
                                 continue;
                             response = handler.sendRequestAndGetResponse(request);
-                            if (response instanceof GameWaitResponse)
-                            {
-                                System.out.println(Constants.AWAIT);
-                                response = handler.awaitEvent();
-                            }
                             menuMessage = player.handleGameResponse((Response) response);
                             System.out.println(menuMessage);
+                            if (menuMessage.equals(Constants.AWAIT))
+                            {
+                                response = handler.awaitEvent();
+                                menuMessage = player.handleGameResponse((Response) response);
+                                System.out.println(menuMessage);
+                            }                          
                         }
                     }
                     catch (NumberFormatException e)

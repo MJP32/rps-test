@@ -23,6 +23,7 @@ import com.tw.casino.connection.messages.data.GameDetails;
 import com.tw.casino.dataloader.DefaultGameDataLoader;
 import com.tw.casino.dataloader.GameDataLoader;
 import com.tw.casino.util.Constants;
+import com.tw.casino.util.VisibleForTest;
 
 public class CasinoManager implements ICasinoManager
 {
@@ -53,6 +54,12 @@ public class CasinoManager implements ICasinoManager
         }
     }
     
+    @VisibleForTest
+    public ConcurrentMap<String, Deque<UUID>> getGameDealerCache()
+    {
+        return gameDealerCache;
+    }
+
     public double getHouseAccountBalance()
     {
         return houseAccountBalance.get();
@@ -64,12 +71,14 @@ public class CasinoManager implements ICasinoManager
         houseAccountBalance.getAndAdd(houseDeposit);
     }
 
-    private List<GameDetails> getGameDetailsList()
+    @VisibleForTest
+    public List<GameDetails> getGameDetailsList()
     {
         return gameDataLoader.availableGames();
     }
     
-    private List<DealerGameDetails> getGameData()
+    @VisibleForTest
+    public List<DealerGameDetails> getGameData()
     {
         return gameDataLoader.getGames();
     }
