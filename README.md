@@ -32,10 +32,8 @@ The following messages are simply forwarded to the Player.
 Other *components*:
 
 * **Game**: Along with a basic interface, the Rock-Paper-Scissors implementation is provided. For testing out the game play, two GameStrategy implementations are also present.
-
-*RandomGuessingRPSGameStrategy*: generates a random move every time.
-
-*SharpRPSGameStrategy*: Always plays 'scissors'.
+* *RandomGuessingRPSGameStrategy*: generates a random move every time.
+* *SharpRPSGameStrategy*: Always plays 'scissors'.
 
 * **GameDataLoader**: This loads up configured games and offers them to the CasinoManager at startup. While the current implementation simply has a hard-coded game loading up, it can potentially be implemented to load data from external files or databases. Since it is initialized only at startup, it does not affect the runtime performance of the Casino.
 
