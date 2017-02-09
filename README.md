@@ -11,18 +11,24 @@
 
 ## Running the Casino ##
 
-To play at the casino follow these steps.
-### Step 1: (Required) Install Dependencies ###
+To play at the casino follow these steps. All of these are mandatory except step three.
+### Step 1: Get the project directory and files ###
+* Clone the repository with the following command to your local directory.
+```
+$ git clone https://ssiddhartha@bitbucket.org/ssiddhartha/singapore.git/
+```
+
+### Step 2: Install Dependencies ###
 * Unzip the dependencies directory.
 * Follow the instructions in the included *dependencies_readme.txt* to install the jars required to build the project.
 
-### Step 2: (Optional) Implement a strategy for Rock-Paper-Scissors ###
+### Step 3: Implement a strategy for Rock-Paper-Scissors (Optional) ###
 * Implement the **com.tw.casino.game.GameStrategy** interface.
 * Annotate your implementation class with the tag **@EmployStrategy** and place in under the same package or any sub-package. Do not place it any where else.
 * For this implementation only the first implementation found reflectively in the class path is picked up and assigned as the strategy to be used.
 * The *RandomGuessingRPSStrategy* described above has been currently annotated and may be used without change.
 
-### Step 3: (Required) Build the project ###
+### Step 4: Build the project ###
 * Open up a terminal/shell or cmd window. 
 * From the *casino* project directory run the following command.
 
@@ -32,6 +38,7 @@ To play at the casino follow these steps.
 mvn install
 ```
 
+### Step 5: Start up the server and clients ###
 * From the generated **target** directory you can start up each of the actors as shown.
 
 ```
@@ -41,7 +48,7 @@ $ java -jar casino_server.jar <server_port>
 $ java -jar casino_dealer.jar <server_host> <server_port>
 $ java -jar casino_player.jar <server_host> <server_port> <starting_balance>
 ```
-Once you have instantiated as server, you can instantiate any number of Dealers and Players. However, as described earlier only the most recently started Dealer will be asked to handle the Player's GameRequests.
+Once you have instantiated as server, you can instantiate any number of Dealers and Players. You will need at least two instances of the Player to play Rock-Paper-Scissors. Additionally, only the most recently started Dealer will be asked to handle the Player's Game requests.
 
 ### For questions, comments or concerns ###
 * **Contact**: Siddhartha Sengupta
