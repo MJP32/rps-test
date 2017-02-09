@@ -4,7 +4,7 @@ public class Constants
 {
     public static final String STARTUP_SERVER = "Provide port as: server <port>";
     public static final String STARTUP_DEALER = "Provide host and port as: dealer <host> <port>";
-    public static final String STARTUP_PLAYER = "Provide host and port as: player <host> <port>";
+    public static final String STARTUP_PLAYER = "Provide host and port as: player <host> <port> <starting_balance>";
     
     // Dealer
     public static final String DEALER_READY = "Dealer is online.";
@@ -27,6 +27,7 @@ public class Constants
     public static final String BALANCE = "Account Balance: " ;
     
     // Game
+    public static final String GAME_LOCATION = "com.tw.casino.game";
     public static final String RPS = "Rock-Paper-Scissors";
     public static final String WINNER = "Winner";
     public static final String OTHERS = "Did Not Win";

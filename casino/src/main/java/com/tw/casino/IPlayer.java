@@ -16,6 +16,8 @@ public interface IPlayer
 
     void setGameStrategy(GameStrategy strategy);
     
+    void loadPlayerStrategy();
+    
     Request createGameListRequest();
     
     Request createGameRequest(String name);

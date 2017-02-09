@@ -1,10 +1,16 @@
 package com.tw.casino.actor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import com.tw.casino.IPlayer;
 import com.tw.casino.connection.messages.GameCompleteResponse;
@@ -23,11 +29,13 @@ import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
+import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.Constants;
+import com.tw.casino.util.EmployStrategy;
 
 public class Player implements IPlayer 
 {
-    private static final GameStrategy DEFAULT_STRATEGY = new RandomGuesingRPSStrategy();
+    private static final GameStrategy DEFAULT_STRATEGY = new SharpRPSStrategy();
     
     private UUID playerId;
     private double accountBalance;
@@ -73,6 +81,36 @@ public class Player implements IPlayer
         return availableGames;
     }
     
+    public void loadPlayerStrategy()
+    {
+        Reflections reflections = new Reflections(Constants.GAME_LOCATION, new SubTypesScanner());
+        Set<Class<? extends GameStrategy>> strategies = reflections.getSubTypesOf(GameStrategy.class);
+        GameStrategy gameStrategy = null;
+        
+        for (Class<? extends GameStrategy> strategy : strategies)
+        {
+            if (strategy.getAnnotation(EmployStrategy.class) != null)
+            {
+                Constructor<? extends GameStrategy> constructor; 
+                try
+                {
+                    constructor = strategy.getConstructor((Class<?>[])null);
+                    gameStrategy = constructor.newInstance((Object[])null);
+                }
+                catch (InstantiationException | NoSuchMethodException | SecurityException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        this.strategy = gameStrategy != null ? gameStrategy : DEFAULT_STRATEGY;
+    }
+    
     @Override
     public Request createGameListRequest()
     {
@@ -111,22 +149,21 @@ public class Player implements IPlayer
     public String handleGameListResponse(Response response)
     {
         GameListResponse gameListResponse = (GameListResponse) response;
+        
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Constants.GAME_LIST_AVAILABLE);
-        stringBuilder.append("\n");
-        int gameIndex = 1;
+        int gameCode = 1;
         for (GameDetails details : gameListResponse.getAvailableGames())
         {
             String name = details.getName();
+            
             availableGames.put(name, details);
             
-            stringBuilder.append("Game Code: [");
-            stringBuilder.append(gameIndex++);
-            stringBuilder.append("]  Game: ");
+            stringBuilder.append("Game Code: ");
+            stringBuilder.append(gameCode++);
+            stringBuilder.append("  Name: ");
             stringBuilder.append(name);
             stringBuilder.append("  Entry Fee: ");
             stringBuilder.append(details.getEntryFee());
-            stringBuilder.append("\n");
         }
         
         return stringBuilder.toString();

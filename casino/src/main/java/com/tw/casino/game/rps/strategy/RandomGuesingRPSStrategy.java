@@ -8,7 +8,9 @@ import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.RPSMove;
 import com.tw.casino.game.rps.RPSPlay;
 import com.tw.casino.util.Constants;
+import com.tw.casino.util.EmployStrategy;
 
+@EmployStrategy
 public class RandomGuesingRPSStrategy implements GameStrategy
 {
     private Random random;

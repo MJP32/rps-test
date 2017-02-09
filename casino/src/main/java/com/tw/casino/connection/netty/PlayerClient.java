@@ -3,10 +3,16 @@ package com.tw.casino.connection.netty;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.Set;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import com.tw.casino.IPlayer;
 import com.tw.casino.actor.Player;
@@ -20,9 +26,11 @@ import com.tw.casino.connection.messages.GameWaitResponse;
 import com.tw.casino.connection.messages.Message;
 import com.tw.casino.connection.messages.Response;
 import com.tw.casino.connection.messages.data.GameDetails;
+import com.tw.casino.game.GameStrategy;
 import com.tw.casino.game.rps.strategy.RandomGuesingRPSStrategy;
 import com.tw.casino.game.rps.strategy.SharpRPSStrategy;
 import com.tw.casino.util.Constants;
+import com.tw.casino.util.EmployStrategy;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -58,6 +66,7 @@ public final class PlayerClient
     
     private static Scanner scanner = new Scanner(System.in);
     
+    // Optional approach to a menu driven way to enter your starting balance.
     public static double getStartBalance()
     {
         double startBalance = 0.0;
@@ -94,10 +103,12 @@ public final class PlayerClient
     {   
         // Get start up args
         String host = args[0];
+        double startingBalance = 0;
         int port = 0;
         try
         {
             port = Integer.parseInt(args[1]);
+            startingBalance = Double.parseDouble(args[2]);
         }
         catch (NumberFormatException e)
         {
@@ -132,14 +143,11 @@ public final class PlayerClient
             // Operate here
             Scanner scanner = new Scanner(System.in);
             IPlayer player;
-            System.out.println(Constants.WELCOME);
+            System.out.println(Constants.WELCOME + " " + Constants.GAME_LIST_AVAILABLE);
             
-            double startBalance = getStartBalance();
-            player = new Player(startBalance);
-            
+            player = new Player(startingBalance);
             // Set Player Strategy
-            //player.setGameStrategy(new SharpRPSStrategy());
-            player.setGameStrategy(new RandomGuesingRPSStrategy());
+            player.loadPlayerStrategy();
 
             Message request = null;
             Message response = null;
