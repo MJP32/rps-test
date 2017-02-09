@@ -43,12 +43,5 @@ $ java -jar casino_player.jar <server_host> <server_port> <starting_balance>
 ```
 Once you have instantiated as server, you can instantiate any number of Dealers and Players. However, as described earlier only the most recently started Dealer will be asked to handle the Player's GameRequests.
 
-
-## External libraries used ##
-* [Netty](http://netty.io)
-* [Reflections](https://github.com/ronmamo/reflections)
-* [Maven Assembly Plugin](http://maven.apache.org/plugins/maven-assembly-plugin/)
-* Related dependencies: Guava, Slf4j-API, Javassist.
-
 ### For questions, comments or concerns ###
 * **Contact**: Siddhartha Sengupta
