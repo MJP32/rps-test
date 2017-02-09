@@ -102,7 +102,6 @@ public class Dealer implements IDealer
         // Validate entry fee
         if (player.getEntryFee() < requestedGame.entryFee())
         {
-            System.out.println("Player paid: " + player.getEntryFee());
             response = new GameRejectResponse(player.getPlayerId());
             return response;
         }
