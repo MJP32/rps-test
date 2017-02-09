@@ -5,9 +5,9 @@
 * Rock-Paper-Scissors is pre-loaded as directed by the design specification.
 
 ## System Requirements ##
-* JDK 1.8 or higher
-* Git
-* Apache Maven
+* [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) or higher
+* [Git](https://git-scm.com)
+* [Apache Maven](https://maven.apache.org)
 
 ## Running the Casino ##
 
