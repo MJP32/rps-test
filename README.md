@@ -15,7 +15,7 @@ To play at the casino follow these steps. All of these are mandatory except step
 ### Step 1: Get the project directory and files ###
 * Clone the repository with the following command to your local directory.
 ```
-$ git clone https://ssiddhartha@bitbucket.org/ssiddhartha/singapore .
+$ git clone https://abishekk6@bitbucket.org/abishekk6/rps-solution.git .
 ```
 
 ### Step 2: Install Dependencies ###
