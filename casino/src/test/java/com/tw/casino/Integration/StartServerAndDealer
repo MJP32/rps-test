@@ -1,0 +1,26 @@
+package com.tw.casion.integration;
+
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLException;
+
+
+public class StartServerAndDealer {
+	public static void main(String[] args) {
+		StartServerAndDealer dealerAndServer = new StartServerAndDealer();
+		dealerAndServer.connect();
+	}
+	
+	public void connect() {
+		try {
+			CasinoServer.start();
+			CasinoDealer.start();
+		} 
+		catch (SSLException | CertificateException | InterruptedException e) {
+			e.printStackTrace();
+		}
+		finally {
+			
+		}
+	}
+}
