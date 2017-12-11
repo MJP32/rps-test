@@ -1,5 +1,6 @@
 package com.tw.casion.integration;
 
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLException;
 
+import org.hamcrest.core.IsNot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +42,14 @@ public class CasinoTest {
 	EventLoopGroup group;
 	Channel channel;
 	String host = "localhost";
-	double startingBalance = 5000;
+	//double startingBalance = 5000;
 	int port = 8088;
 	CasinoClientHandler handler;
+	
+	IPlayer player = new Player(5000);
+	Message request = null;
+	Message response = null;
+	String menuMessage = null;
 
 	@Before
 	public void connect() throws SSLException {
@@ -71,9 +78,6 @@ public class CasinoTest {
 	
 	@Test
 	public void testNameOfGameReturnedFromServer() {
-		Message request = null;
-		IPlayer player;
-		player = new Player(startingBalance);
 		player.loadPlayerStrategy();
 		request = player.createGameListRequest();
 		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
@@ -86,9 +90,6 @@ public class CasinoTest {
 	
 	@Test
 	public void testPriceOfGameReturnedFromServer() {
-		Message request = null;
-		IPlayer player;
-		player = new Player(startingBalance);
 		player.loadPlayerStrategy();
 		request = player.createGameListRequest();
 		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
@@ -100,12 +101,7 @@ public class CasinoTest {
 	
 	@Test
 	public void testWinOrLoseOrAwaitMessage() {
-		IPlayer player;
-		player = new Player(startingBalance);
 		player.loadPlayerStrategy();
-		Message request = null;
-		Message response = null;
-		String menuMessage = null;
 		request = player.createGameListRequest();
 		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
 		GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
@@ -117,20 +113,129 @@ public class CasinoTest {
 		response = handler.sendRequestAndGetResponse(request);
 		menuMessage = player.handleGameResponse((Response) response);
 		System.out.println(menuMessage);
-		if (menuMessage.equals(Constants.AWAIT))
-		{
+		if (menuMessage.equals(Constants.AWAIT)){
 			assertThat(menuMessage, is("Waiting for more players to join."));
 		}  
 		else if(menuMessage.equals(Constants.REGRET)) {
 			assertThat(menuMessage, is("Sorry! You didn't win this time."));
 		}
 		else if(menuMessage.equals(Constants.CONGRATULATIONS)) {
-			assertThat(menuMessage, is("Congratulations! You win $10"));
+			assertThat(menuMessage, is("Congratulations! You win $10.0"));
 		}
 		
 	}
 	
+	@Test
+	public void testTwoPlayers() {
+		player.loadPlayerStrategy();
+		
+		
+		request = player.createGameListRequest();
+		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
+		GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
+		gameDetails.addAll(gameListResponse.getAvailableGames());
+		menuMessage = player.handleGameListResponse(gameListResponse);
+		System.out.println(menuMessage);
+		GameDetails details = gameDetails.get(0);
+		request = player.createGameRequest(details.getName());
+		response = handler.sendRequestAndGetResponse(request);
+		menuMessage = player.handleGameResponse((Response) response);
+		System.out.println(menuMessage);
+		if (menuMessage.equals(Constants.AWAIT)){
+			assertThat(menuMessage, is("Waiting for more players to join."));
+		}  
+		else if(menuMessage.equals(Constants.REGRET)) {
+			assertThat(menuMessage, is("Sorry! You didn't win this time."));
+		}
+		else if(menuMessage.equals(Constants.CONGRATULATIONS)) {
+			assertThat(menuMessage, is("Congratulations! You win $10.0"));
+		}
+		
+		
+		//create player with 10000
+		IPlayer player2 = new Player(10000);
+		Message request2 = null;
+		Message response2 = null;
+		String menuMessage2 = null;
+		
+		request2 = player2.createGameListRequest();
+		List<GameDetails> gameDetails2 = new ArrayList<GameDetails>();
+		GameListResponse gameListResponse2 = (GameListResponse) handler.sendRequestAndGetResponse(request2);
+		gameDetails2.addAll(gameListResponse2.getAvailableGames());
+		menuMessage2 = player2.handleGameListResponse(gameListResponse2);
+		System.out.println(menuMessage2);
+		GameDetails details2 = gameDetails2.get(0);
+		request2 = player2.createGameRequest(details2.getName());
+		response2 = handler.sendRequestAndGetResponse(request2);
+		menuMessage2 = player2.handleGameResponse((Response) response2);
+		System.out.println(menuMessage2);
+		if (menuMessage2.equals(Constants.AWAIT)){
+			assertThat(menuMessage2, is("Waiting for more players to join."));
+		}  
+		else if(menuMessage2.equals(Constants.REGRET)) {
+			assertThat(menuMessage2, is("Sorry! You didn't win this time."));
+		}
+		else if(menuMessage2.equals(Constants.CONGRATULATIONS)) {
+			assertThat(menuMessage2, is("Congratulations! You win $10.0"));
+		}
+		
+		
+	}
 
+	@Test
+	public void testCheckBalanceFromWinOrLoss() {
+		player.loadPlayerStrategy();
+		request = player.createGameListRequest();
+		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
+		GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
+		gameDetails.addAll(gameListResponse.getAvailableGames());
+		menuMessage = player.handleGameListResponse(gameListResponse);
+		System.out.println(menuMessage);
+		GameDetails details = gameDetails.get(0);
+		request = player.createGameRequest(details.getName());
+		response = handler.sendRequestAndGetResponse(request);
+		menuMessage = player.handleGameResponse((Response) response);
+		System.out.println(menuMessage);
+		if (menuMessage.equals(Constants.AWAIT)){
+			assertThat(player.getAccountBalance(), is(4995.0));
+		}  
+		else if(menuMessage.equals(Constants.REGRET)) {
+			assertThat(player.getAccountBalance(), is(4995.0));
+		}
+		else {
+			assertThat(player.getAccountBalance(), is(5005.0));
+		}
+		System.out.println(player.getAccountBalance());
+	}
+	
+	//TODO: Implement wrong output from dealer server
+	@Test
+	public void testCheckWrongBalanceFromWinOrLoss() {
+		player.loadPlayerStrategy();
+		request = player.createGameListRequest();
+		List<GameDetails> gameDetails = new ArrayList<GameDetails>();
+		GameListResponse gameListResponse = (GameListResponse) handler.sendRequestAndGetResponse(request);
+		gameDetails.addAll(gameListResponse.getAvailableGames());
+		menuMessage = player.handleGameListResponse(gameListResponse);
+		System.out.println(menuMessage);
+		GameDetails details = gameDetails.get(0);
+		request = player.createGameRequest(details.getName());
+		response = handler.sendRequestAndGetResponse(request);
+		menuMessage = player.handleGameResponse((Response) response);
+		System.out.println(menuMessage);
+		if (menuMessage.equals(Constants.AWAIT)){
+			assertNotSame(player.getAccountBalance(), is(4995.0));
+		}  
+		else if(menuMessage.equals(Constants.REGRET)) {
+			assertNotSame(player.getAccountBalance(), is(4995.0));
+		}
+		else {
+			assertNotSame(player.getAccountBalance(), is(5005.0));
+		}
+		System.out.println(player.getAccountBalance());
+	}	
+	
+	
 	@After
 	public void  shutdown() {
 		channel.close();
