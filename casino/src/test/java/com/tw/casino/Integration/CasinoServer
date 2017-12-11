@@ -1,0 +1,77 @@
+package com.tw.casion.integration;
+
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLException;
+
+import com.tw.casino.ICasinoManager;
+import com.tw.casino.actor.CasinoManager;
+import com.tw.casino.connection.netty.CasinoServerInitializer;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
+
+public class CasinoServer {
+
+	static final boolean SSL = System.getProperty("ssl") != null;
+	public static void start() throws SSLException, InterruptedException, CertificateException {
+		
+		// Get start up args
+        int port = 8088;
+        /*try
+        {
+            port = Integer.parseInt(args[0]);
+        }
+        catch (NumberFormatException e)
+        {
+            displayStartup();
+            
+        }*/
+        
+        final SslContext sslCtx;
+        if (SSL)
+        {
+            SelfSignedCertificate ssc = new SelfSignedCertificate();
+            sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+        }
+        else
+        {
+            sslCtx = null;
+        }
+        
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        
+        ICasinoManager casinoManager = new CasinoManager();
+        
+        // Run startup configuration tasks
+        casinoManager.initialize();
+        
+        try
+        {
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel.class)
+            .handler(new LoggingHandler(LogLevel.WARN))
+            .childHandler(new CasinoServerInitializer(sslCtx, casinoManager));
+            
+            b.bind(port).sync().channel().closeFuture().sync();
+            
+        }
+        finally
+        {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+		
+		
+	}
+	
+}
